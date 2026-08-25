@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RU151 应急 · 线下履约指挥面板</title>
+<style>
+:root{
+  --bg:#0a0e13; --card:#101823; --ink:#d8e3ee; --sub:#8298ab; --line:#1e2c3a;
+  --amber:#ffb454; --amberbg:rgba(255,180,84,.09); --red:#ff5f56; --redbg:rgba(255,95,86,.10);
+  --green:#3ddc84; --greenbg:rgba(61,220,132,.10); --blue:#4cc2ff; --bluebg:rgba(76,194,255,.10);
+  --mono:Consolas,'SF Mono',Menlo,'Cascadia Mono','Courier New',monospace;
+  --shadow:0 0 0 1px rgba(76,194,255,.05),0 10px 30px rgba(0,0,0,.45);
+  --r:10px; --rs:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,"Helvetica Neue","PingFang SC","Microsoft YaHei","Noto Sans",Arial,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;background-image:linear-gradient(rgba(76,194,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(76,194,255,.028) 1px,transparent 1px);background-size:34px 34px}
+.wrap{max-width:1060px;margin:0 auto;padding:0 14px}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+::-webkit-scrollbar{width:10px;height:8px}
+::-webkit-scrollbar-thumb{background:#22364a;border-radius:6px}
+::-webkit-scrollbar-track{background:#0a0e13}
+
+/* ===== header ===== */
+header{position:sticky;top:0;z-index:50;background:rgba(10,14,19,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.hbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0}
+.htitle{font-family:var(--mono);font-size:13.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;display:flex;align-items:center;gap:9px;color:#cfe2f2}
+.hdot{width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(255,95,86,.16),0 0 12px rgba(255,95,86,.7);flex:none;animation:hp 2.4s ease-in-out infinite}
+@keyframes hp{50%{box-shadow:0 0 0 6px rgba(255,95,86,.08),0 0 5px rgba(255,95,86,.4)}}
+.hspacer{flex:1}
+.seg{display:flex;background:#0d141c;border:1px solid var(--line);border-radius:8px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700;font-family:var(--mono);letter-spacing:.5px;color:var(--sub);cursor:pointer;white-space:nowrap}
+.seg button.on{background:#16222f;color:var(--blue);box-shadow:inset 0 0 0 1px rgba(76,194,255,.45),0 0 10px rgba(76,194,255,.12)}
+.seg.tseg button.on.t1{color:var(--amber);box-shadow:inset 0 0 0 1px rgba(255,180,84,.5),0 0 10px rgba(255,180,84,.12)}
+.seg.tseg button.on.t2{color:var(--red);box-shadow:inset 0 0 0 1px rgba(255,95,86,.5),0 0 10px rgba(255,95,86,.14)}
+.seg.tseg button.on.t3{color:var(--green);box-shadow:inset 0 0 0 1px rgba(61,220,132,.5),0 0 10px rgba(61,220,132,.12)}
+
+/* ===== status banner ===== */
+.banner{border-radius:var(--r);padding:16px 18px;margin:16px 0 6px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:flex-start;border:1px solid}
+.banner .bic{font-size:26px;line-height:1.1;flex:none}
+.banner h2{font-size:16.5px;margin-bottom:3px}
+.banner p{font-size:13.5px;opacity:.86}
+.banner.t1{background:linear-gradient(135deg,rgba(255,180,84,.16),rgba(255,180,84,.05));border-color:rgba(255,180,84,.45);color:#ffd9a0}
+.banner.t2{background:linear-gradient(135deg,rgba(255,95,86,.17),rgba(255,95,86,.05));border-color:rgba(255,95,86,.5);color:#ffb8b2}
+.banner.t3{background:linear-gradient(135deg,rgba(61,220,132,.15),rgba(61,220,132,.05));border-color:rgba(61,220,132,.45);color:#a9ecc8}
+
+/* ===== nav chips ===== */
+.nav{display:flex;gap:7px;overflow-x:auto;padding:10px 0 4px;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{flex:none;font-size:12.5px;font-weight:600;color:var(--sub);background:#0d141c;border:1px solid var(--line);border-radius:7px;padding:5px 12px}
+.nav a:hover{color:var(--blue);text-decoration:none;border-color:rgba(76,194,255,.5)}
+
+/* ===== sections ===== */
+section{margin:30px 0;scroll-margin-top:96px}
+.sec-h{display:flex;align-items:center;gap:9px;margin-bottom:4px}
+.sec-h .bar{width:5px;height:20px;border-radius:2px;background:linear-gradient(180deg,var(--blue),#155e85);box-shadow:0 0 8px rgba(76,194,255,.5)}
+.sec-h h2{font-size:18px;font-weight:700;letter-spacing:.3px}
+.sec-sub{font-size:13px;color:var(--sub);margin-bottom:14px}
+.focus-tag{display:none;font-size:11px;font-weight:700;color:#fff;background:var(--red);border-radius:999px;padding:2px 9px;margin-left:2px;box-shadow:0 0 12px rgba(255,95,86,.55)}
+section.focus{background:rgba(76,194,255,.045);border-radius:var(--r)}
+section.focus .focus-tag{display:inline-block}
+section.focus .sec-h h2{color:var(--red)}
+
+/* ===== cards ===== */
+.grid{display:grid;gap:12px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:860px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.g4,.g3,.g2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--rs);box-shadow:var(--shadow);padding:15px}
+.scard .ic{font-size:24px;margin-bottom:8px}
+.scard h3{font-size:14.5px;margin-bottom:4px}
+.scard p{font-size:12.5px;color:var(--sub)}
+
+/* ===== pipeline ===== */
+.pipe{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:6px 2px 12px}
+.pnode{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:var(--rs);box-shadow:var(--shadow);padding:12px 12px;position:relative}
+.pnode .ic{font-size:22px}
+.pnode h4{font-size:13.5px;margin:4px 0 3px}
+.pnode p{font-size:11.5px;color:var(--sub);line-height:1.45}
+.parrow{flex:none;width:26px;display:flex;align-items:center;justify-content:center;color:#2e4256;font-size:16px}
+@media(max-width:700px){
+  .pipe{flex-direction:column;overflow:visible}
+  .parrow{width:auto;height:22px;transform:rotate(90deg)}
+}
+
+/* ===== stage cards & flow ===== */
+.stage{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.stage-h{display:flex;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.stage-h .sic{width:44px;height:44px;border-radius:10px;background:#152230;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none}
+.stage-h h3{font-size:16px}
+.stage-h .own{font-size:12px;color:var(--sub);font-family:var(--mono)}
+.stage-b{padding:16px 18px}
+details.apps{margin-bottom:14px}
+details.apps summary{font-size:12.5px;color:var(--sub);cursor:pointer;user-select:none;list-style:none;display:flex;align-items:center;gap:6px}
+details.apps summary::-webkit-details-marker{display:none}
+details.apps summary::before{content:"▸";transition:transform .15s;display:inline-block;font-size:11px}
+details.apps[open] summary::before{transform:rotate(90deg)}
+.appchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.appchip{font-size:11px;font-family:var(--mono);background:#0b1219;border:1px solid #23374a;border-radius:6px;padding:2.5px 8px;color:#9fc0da}
+.appchip b{color:var(--blue);font-weight:650}
+
+.flow{display:flex;flex-direction:column;align-items:stretch}
+.farrow{width:2px;height:16px;background:#274058;margin:0 auto;position:relative;flex:none}
+.farrow::after{content:"";position:absolute;left:50%;bottom:-1px;transform:translateX(-50%);border:5px solid transparent;border-top:6px solid #274058}
+.fnode{width:100%}
+.fnode.start{background:var(--bluebg);border:1px solid rgba(76,194,255,.45);color:#bfe6ff;border-radius:999px;padding:8px 16px;font-size:13px;font-weight:600;text-align:center}
+.fnode.rule{background:repeating-linear-gradient(45deg,rgba(255,95,86,.14) 0 10px,rgba(255,95,86,.05) 10px 20px);border:1px solid rgba(255,95,86,.5);color:#ffc9c4;border-radius:var(--rs);padding:10px 14px;font-size:13px;font-weight:600}
+.fnode.out{background:#0d141c;border:1px dashed #2e4256;color:var(--sub);border-radius:var(--rs);padding:9px 14px;font-size:12.5px}
+.fnode.step{display:flex;gap:12px;background:#0e1620;border:1px solid var(--line);border-radius:var(--rs);padding:11px 14px;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.fnum{width:26px;height:26px;border-radius:50%;background:#132130;border:1px solid rgba(76,194,255,.5);color:var(--blue);font-family:var(--mono);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px}
+.fbody{flex:1;min-width:0}
+.fmeta{margin-bottom:3px}
+.ftext{font-size:13.5px}
+.frec{margin-top:6px;font-size:11.5px;color:var(--sub);display:inline-block;background:#0b1219;border:1px solid #23374a;border-radius:6px;padding:1.5px 8px}
+.fnode.dec{background:var(--amberbg);border:1px solid rgba(255,180,84,.45);border-radius:var(--rs);padding:12px 14px}
+.fq{font-size:13.5px;font-weight:650;color:#ffd9a0;margin-bottom:9px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}
+.opt{background:#0e1620;border:1px solid #223548;border-radius:8px;padding:8px 11px;font-size:12.5px;display:flex;gap:8px;align-items:flex-start}
+.olabel{flex:none;font-size:11px;font-weight:700;border-radius:6px;padding:1px 7px;margin-top:1px}
+.olabel.yes{background:var(--greenbg);color:var(--green);border:1px solid rgba(61,220,132,.4)}
+.olabel.no{background:var(--redbg);color:var(--red);border:1px solid rgba(255,95,86,.4)}
+.olabel.alt{background:var(--bluebg);color:var(--blue);border:1px solid rgba(76,194,255,.4)}
+.otext{color:#b9c7d4}
+
+/* role badges */
+.rb{display:inline-block;font-size:10.5px;font-weight:700;border-radius:6px;padding:1.5px 7px;color:#fff;letter-spacing:.3px;margin-right:4px}
+.rb-IC{background:#2b6cb0}.rb-TECH{background:#6b46c1}.rb-SORT{background:#c05621}
+.rb-LINE{background:#2f855a}.rb-PUDO{background:#0e7490}.rb-CS{background:#b83280}
+.rb-CPL{background:#4c51bf}.rb-DM{background:#975a16}.rb-SPOK{background:#4a5568}
+.rb-ALL{background:#8a8272}
+
+/* ===== first hour ===== */
+.fh .fnode.step{background:#101a26}
+
+/* ===== roles ===== */
+.role{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--rs);box-shadow:var(--shadow);padding:14px}
+.role .code{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex:none;letter-spacing:.5px;font-family:var(--mono)}
+.role h4{font-size:14px;margin-bottom:2px}
+.role .rd{font-size:12.5px;color:var(--sub)}
+.role .ro{font-size:12px;margin-top:5px;color:#b9c7d4}
+.role .ro b{font-weight:650}
+
+/* ===== checklist ===== */
+.ckbar{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.ckbar .prog{flex:1;min-width:160px;height:8px;border-radius:99px;background:#1a2634;overflow:hidden}
+.ckbar .prog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#2a9d68,var(--green));box-shadow:0 0 10px rgba(61,220,132,.5);transition:width .3s}
+.ckbar .cnt{font-size:13px;font-weight:700;color:var(--green);font-family:var(--mono)}
+.ck{display:flex;gap:11px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:var(--rs);box-shadow:var(--shadow);padding:12px 14px;margin-bottom:9px;cursor:pointer;transition:opacity .2s}
+.ck input{width:19px;height:19px;margin-top:1px;accent-color:var(--green);cursor:pointer;flex:none}
+.ck .ct{font-size:13.5px;flex:1}
+.ck .meta{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap}
+.chip{font-size:10.5px;font-weight:700;border-radius:6px;padding:1.5px 8px;background:#141e2a;border:1px solid #23374a;color:var(--sub)}
+.chip.dl{background:var(--bluebg);color:var(--blue);border-color:rgba(76,194,255,.35)}
+.ck.done{opacity:.55}
+.ck.done .ct{text-decoration:line-through}
+
+/* ===== backfill timeline ===== */
+.tl{position:relative;padding-left:34px}
+.tl::before{content:"";position:absolute;left:12px;top:8px;bottom:8px;width:2px;background:#1f3a2c}
+.tstep{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--rs);box-shadow:var(--shadow);padding:12px 15px;margin-bottom:10px}
+.tstep::before{content:"";position:absolute;left:-28px;top:16px;width:12px;height:12px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(61,220,132,.12),0 0 10px rgba(61,220,132,.6)}
+.tstep h4{font-size:13.5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tstep .tp{font-size:11.5px;color:var(--sub);margin-top:3px}
+.tn{flex:none;width:22px;height:22px;border-radius:50%;background:rgba(61,220,132,.12);border:1px solid rgba(61,220,132,.4);color:var(--green);font-size:12px;font-weight:800;font-family:var(--mono);display:flex;align-items:center;justify-content:center}
+
+/* ===== forms ===== */
+.form-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
+.form-card .fh2{display:flex;align-items:center;gap:10px;margin-bottom:3px;flex-wrap:wrap}
+.form-card h3{font-size:15px}
+.form-note{font-size:12px;color:var(--sub);margin-bottom:12px}
+.frow{display:flex;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line)}
+.frow:last-child{border-bottom:0}
+.flabel{flex:none;width:170px;font-size:13px;font-weight:600}
+.fline{flex:1;border-bottom:1px solid #2e4256;height:1.2em}
+.fdesc{font-size:11.5px;color:var(--sub);flex-basis:100%;padding-left:180px;margin-top:-4px}
+@media(max-width:600px){.flabel{width:120px}.fdesc{padding-left:0}}
+.pbtn{border:1px solid var(--blue);background:transparent;color:var(--blue);border-radius:8px;width:34px;height:34px;font-size:15px;cursor:pointer;flex:none;display:flex;align-items:center;justify-content:center}
+.pbtn:hover{background:var(--blue);color:#061019}
+
+/* ===== exceptions ===== */
+.exc{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:var(--rs);box-shadow:var(--shadow);padding:14px}
+.exc h4{font-size:13.5px;margin-bottom:6px;display:flex;gap:7px;align-items:center}
+.exc .fl{font-size:12.5px;color:#c4d2de}
+.exc .fo{font-size:11.5px;color:var(--sub);margin-top:7px}
+
+/* ===== footer ===== */
+footer{margin:44px 0 30px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--sub)}
+footer .flinks{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0}
+footer .note{margin-top:8px;line-height:1.6}
+
+@media print{
+  :root{--bg:#fff;--card:#fff;--ink:#111;--sub:#555;--line:#bbb;--amberbg:#fbf1dd;--redbg:#fcebe9;--greenbg:#e6f4ec;--bluebg:#e8f1fa;--shadow:none;--blue:#2b6cb0}
+  body{background:#fff;background-image:none}
+  header,.nav,.no-print,footer{display:none!important}
+  body.pf #app>section{display:none!important}
+  body.pf #sec-forms{display:block!important}
+  body.pf .form-card{display:none!important;box-shadow:none;border:1px solid #bbb;break-inside:avoid}
+  body.pf .form-card.printing{display:block!important}
+  .pbtn{display:none!important}
+  section{margin:0}
+  .fline{border-color:#999}
+  .fnode.rule{background:#fdecec}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap hbar">
+    <div class="htitle"><span class="hdot" id="hdot"></span><span id="htext">RU151</span></div>
+    <div class="hspacer"></div>
+    <div class="seg tseg" id="tseg"></div>
+    <div class="seg" id="lseg"></div>
+  </div>
+</header>
+<div id="app" class="wrap"></div>
+<script>
+const DATA={zh:{
+meta:{title:'RU151 应急 · 线下履约指挥面板',htext:'RU151 线下履约指挥面板',sub:'海外快递在途订单 · 纯线下实操'},
+levels:[
+ {id:'t1',icon:'🟡',name:'T1 预警',desc:'风险预警期：完成准备清单，打印表单，随时可切换线下。'},
+ {id:'t2',icon:'🔴',name:'T2 受袭',desc:'RU151 受袭或不可用：立即停止接单，全部环节按本面板切换线下执行。'},
+ {id:'t3',icon:'🟢',name:'T3 恢复',desc:'机房恢复且数据完整：按顺序回补数据，验收通过后退出线下模式。'}],
+focusTag:'当前阶段焦点',
+nav:[['sec-sum','摘要'],['sec-fh','首小时'],['sec-pipe','全流程'],['sec-stages','分环节'],['sec-exc','异常'],['sec-backfill','回补'],['sec-roles','角色'],['sec-ck','清单'],['sec-forms','表单']],
+sections:{
+ strategy:{t:'核心策略',sub:'无论哪个环节，先记住这四条。'},
+ fh:{t:'T2 启动首小时',sub:'确认受袭后的前 60 分钟，按顺序完成这 6 件事。'},
+ pipe:{t:'履约全流程总览',sub:'包裹走过的每一步，以及线下模式下每一步靠什么运转。'},
+ stages:{t:'分环节操作指引',sub:'按你所在的环节找到对应流程图，从上到下照做即可。标注「推定」的应用归属请 Owner 在 T1 期确认。'},
+ exc:{t:'异常处理速查',sub:'遇到这些情况，按对应流程处理并登记。'},
+ backfill:{t:'数据回补与恢复（T3）',sub:'机房恢复后，严格按 1→8 顺序执行，前一步完成才能开始下一步。'},
+ roles:{t:'角色与职责',sub:'指挥部（War Room）成员分工。'},
+ ck:{t:'T1 行动清单',sub:'预警期立即启动，逐项勾选，责任到人。'},
+ forms:{t:'纸质表单模板',sub:'T1 期打印发放各站点。点击右侧按钮可单独打印空白表单。'}},
+strategy:[
+ {ic:'🛑',t:'停接单 · 保在途',d:'不再接新订单，集中全部力量把手上的在途包裹履约完成。'},
+ {ic:'🧾',t:'物理面单为准',d:'分拣码、地址、路由一律以面单实物为准，系统数据仅作核对。'},
+ {ic:'🗄️',t:'新加坡库只读兜底',d:'只查询、不写入；线下作业不依赖 RU151 任何接口。'},
+ {ic:'📞',t:'纸质 + 电话',d:'每个环节都有对应的纸质表单和电话协同方式，全程留痕。'}],
+firsthour:[
+ {r:'IC',x:'确认停止接单，并向全员广播。'},
+ {r:'TECH',x:'冻结并导出最新的新加坡在途数据快照。'},
+ {r:'ALL',x:'各站点领取纸质表单 + 离线路由表，切换人工操作。'},
+ {r:'PUDO',x:'柜机停止新入，转有人值守自提。'},
+ {r:'CS',x:'发布客服话术，冻结对外口径。'},
+ {r:'IC',x:'开启 war room 值班与每日例会。'}],
+pipe:[
+ {ic:'📥',t:'接单 & CP',d:'停新单；与 CP 改邮件/电话逐单协同'},
+ {ic:'🧭',t:'路由',d:'按预印《离线路由表》分拣，不做新计算'},
+ {ic:'🏭',t:'分拨',d:'人工分拣建包，纸质交接单一车一单'},
+ {ic:'🚛',t:'干线',d:'固定班次发车，离线调度单签核'},
+ {ic:'🛵',t:'末端 & 自提',d:'纸质清单派送 + 有人值守自提'}],
+stages:[
+ {ic:'📥',t:'接单与 CP 协同',own:'般波 / 月鹤',ag:11,apps:[['link',1],['link-gcs',1],['ruconnect-svr',1],['cn-portal-ru',2],['cngcp-aeru',2],['cngfc-ru',2],['cngdf-ru',2]],nodes:[
+  {t:'start',x:'T2 触发：接到停止接单指令'},
+  {t:'step',r:'IC',x:'停止所有新订单接入（含跨境转本地等依赖 COE 接单的新单），全员广播。'},
+  {t:'step',r:'TECH',x:'暂停与 CP 的 EDI / 数据接口。'},
+  {t:'step',r:'CPL',x:'切换邮件 + 电话 + IM，与 CP 逐单协同。'},
+  {t:'step',r:'CPL',x:'拦截 / 改址 / 退回请求逐单邮件处理。',rec:'登记《离线协同登记簿》'},
+  {t:'dec',q:'CP 失联怎么办？',o:[{k:'no',l:'2 小时无回应',x:'CPL 升级 IC；重大情况由 IC 上报乾卫。'}]},
+  {t:'out',x:'留痕：离线协同登记簿、接口暂停记录、通知存档'}]},
+ {ic:'🧭',t:'网络与路由',own:'六玄 / 纪臣',ag:11,apps:[['global-lnp-networkserver',2],['global-lnp-networkcenter',3],['cnl-network-console',2],['cnl-routing-service',2],['cnl-routing-console-eu',2]],nodes:[
+  {t:'start',x:'包裹到达，需要确定下一站'},
+  {t:'dec',q:'面单上有分拣码 / 路由信息吗？',o:[
+   {k:'yes',l:'有',x:'按《离线路由表》分拣装车（分拣码 → 区段 → 下一站 → CP）。'},
+   {k:'no',l:'无',x:'TECH 从新加坡快照反查，现场手工补注分拣码后再分拣。'}]},
+  {t:'rule',x:'红线：禁止任何新路由计算，一律以既有路由 / 快照为准。'},
+  {t:'out',x:'留痕：装车记录、手工补注登记'}]},
+ {ic:'📦',t:'运单与履约中心',own:'玉鞍 / 子然 / 渊澄',ag:6,apps:[['cnl-fulfill-oms',2],['cnl-fulfill-center',2],['cnl-fulfill-console-eu',2]],nodes:[
+  {t:'step',r:'TECH',x:'停止创建新运单（与停接单联动）。'},
+  {t:'step',r:'ALL',x:'在途状态变化只记纸质台账，不回写系统，恢复后统一补录。',rec:'环节状态台账'},
+  {t:'dec',q:'遇到拦截 / 取消单？',o:[{k:'alt',l:'处理',x:'冻结实物移动，IC 确认后再处置。'}]},
+  {t:'out',x:'留痕：环节状态台账、异常单登记'}]},
+ {ic:'🏭',t:'分拨实操（DMS）',own:'智斗 / 英二 / 玄弥',ag:7,apps:[['gxms',1],['gxms-data',2],['gxms-kernel',2],['wmphu',2]],nodes:[
+  {t:'step',r:'SORT',x:'依赖网络的自动化设备停用，转人工分拣。'},
+  {t:'step',r:'SORT',x:'按物理面单的分拣码 / 路向标记分拣建包。'},
+  {t:'step',r:'SORT',x:'环节间交接使用《纸质交接单》：面单号清单 + 件数 + 双方签字，一车一单。',rec:'交接单存档'},
+  {t:'dec',q:'分拣码无法识别？',o:[{k:'no',l:'异常',x:'移入异常区 → TECH 反查新加坡库 → 补码后回流。'}]},
+  {t:'dec',q:'件数对不上？',o:[{k:'no',l:'差异',x:'交接双方当场确认并登记，报 IC 决定补查 / 赔付。'}]},
+  {t:'out',x:'留痕：建包记录、交接单存档、异常包裹登记、差异登记'}]},
+ {ic:'📍',t:'地址服务',own:'鹤风',ag:2,apps:[['global-division',1],['common-division-service',1]],nodes:[
+  {t:'step',r:'ALL',x:'地址校验 / 解析降级为人工判断 + 地图检索。'},
+  {t:'dec',q:'地址不清楚？',o:[{k:'alt',l:'确认',x:'客服电话联系收件人确认。',},]},
+  {t:'dec',q:'联系不上收件人？',o:[{k:'no',l:'失联',x:'滞留异常区保管，转入异常处理流程。'}]},
+  {t:'out',x:'留痕：地址确认登记簿、异常包裹登记'}]},
+ {ic:'🗄️',t:'资源中心',own:'零故 / 六玄',ag:7,apps:[['urccenter',2],['urc-console',1],['global-lnp-urc',2],['global-lnp-urcconsole',2]],nodes:[
+  {t:'rule',x:'冻结一切资源调度 / 变更，各环节资源维持现状。'},
+  {t:'dec',q:'确实需要调整？',o:[{k:'alt',l:'审批',x:'war room 人工审批后再执行。'}]},
+  {t:'out',x:'留痕：审批记录'}]},
+ {ic:'🚛',t:'干线运输与结算',own:'前风 / 树九 / 天鸣',ag:6,apps:[['cnexport-local-lts',2],['cntmp',2],['cnl-settle-bridge',2]],nodes:[
+  {t:'step',r:'LINE',x:'按固定班次发车，填写《离线调度单》：线路、司机、车牌、件数、签核。'},
+  {t:'step',r:'LINE',x:'装卸以纸质交接单为准。'},
+  {t:'dec',q:'件数有差异？',o:[{k:'no',l:'差异',x:'当场记录，双方确认，报 IC。'}]},
+  {t:'step',r:'LINE',x:'结算作业暂停，留存面单 + 交接单作为恢复后对账依据。'},
+  {t:'out',x:'留痕：调度单存档、差异登记、单据留存'}]},
+ {ic:'🛵',t:'末端配送',own:'行迈',ag:2,apps:[['cnexport-local-lds',2]],nodes:[
+  {t:'step',r:'LINE',x:'小件员凭《纸质派送清单》领件（面单号、地址、电话），离线派送。'},
+  {t:'step',r:'LINE',x:'先电话联系；电话失效则按址上门。'},
+  {t:'dec',q:'派送结果？',o:[
+   {k:'yes',l:'妥投',x:'纸质 POD：签字或拍照留存，标记妥投。'},
+   {k:'no',l:'无人',x:'带回登记，二派或转自提。'},
+   {k:'no',l:'拒收',x:'清单备注，带回登记。'}]},
+  {t:'step',r:'LINE',x:'每日归班：站点汇总派送结果，离线上报 war room。',rec:'日报表'},
+  {t:'out',x:'留痕：派送清单、POD 存档、日报表'}]},
+ {ic:'🔐',t:'自提柜与 PUDO',own:'道阻 / 月鹤 / 古珂',ag:18,apps:[['cng-locker-sop',2],['cnl-infra-locker-cabinet',2],['cnl-infra-locker-workstation',2],['cnl-infra-csp',2],['cnl-infra-plannerconsole',2],['cnt-cabinet-workbench',1],['cnt-cabinet-service-platform',1],['cngpp-ae',2],['cngpp-pudo-sop',2],['cnexport-infra-pudo-workbench',2]],nodes:[
+  {t:'rule',x:'柜机停止新入：新包裹全转有人值守 PUDO 或小件员上门。'},
+  {t:'step',r:'TECH',x:'已入柜包裹：TECH 从新加坡库捞取取件码 / 格口映射，站点打印《取件台账》。'},
+  {t:'step',r:'PUDO',x:'取件核验：取件码或手机尾号 + 证件。'},
+  {t:'dec',q:'柜机打不开？',o:[{k:'no',l:'故障',x:'按应急流程人工开柜，逐次登记：面单号、时间、操作人。'}]},
+  {t:'out',x:'留痕：入库台账、取件台账、人工开柜登记'}]},
+ {ic:'⚙️',t:'中间件与基础设施',own:'般波',ag:2,apps:[['cnarch-mw-nbp',1],['cnarch-mw-nbp-console',1]],nodes:[
+  {t:'step',r:'ALL',x:'中间件失效 = 消息调度能力丧失；各环节一律纸质 + 电话替代，不依赖中间件。'},
+  {t:'step',r:'TECH',x:'评估短信网关等通知通道可用性，供消费者触达使用。'}]}],
+exceptions:[
+ {ic:'📵',t:'消费者失联',f:'按址上门并留告知条 → 累计 3 次尝试后转自提通知 → 仍失败则线下退件登记。',o:'LINE / CS',r:'派送清单、退件登记'},
+ {ic:'🧩',t:'面单破损 / 无法识别',f:'移入异常区隔离 → 按包裹特征 / 订单号反查新加坡库 → 无法识别则登记封存。',o:'SORT / TECH',r:'异常包裹登记'},
+ {ic:'⚖️',t:'包裹件数差异',f:'交接双方当场确认并登记 → 报 IC 决定补查 / 赔付流程。',o:'LINE / SORT',r:'差异登记'},
+ {ic:'↩️',t:'退件订单',f:'线下退件登记 + 实物退回 → 系统恢复后补录。',o:'CPL / LINE',r:'退件登记'},
+ {ic:'💎',t:'高价值 / 敏感件',f:'单独登记、专柜存放、双人交接。',o:'SORT / PUDO',r:'专件台账'}],
+backfill:[
+ {t:'确认恢复条件：集团确认 RU151 可用、数据完整性校验通过。',pre:'集团通知 + 校验报告',own:'TECH'},
+ {t:'回补运单状态。',pre:'步骤 1 完成',own:'TECH + 各环节'},
+ {t:'回补分拨交接记录。',pre:'步骤 2 完成',own:'SORT'},
+ {t:'回补派送 POD。',pre:'步骤 3 完成',own:'LINE'},
+ {t:'回补自提取件台账。',pre:'步骤 3 完成',own:'PUDO'},
+ {t:'结算单据对账。',pre:'步骤 2–5 完成',own:'结算'},
+ {t:'差异处理：全部进入人工审核队列，禁止自动覆盖。',pre:'回补中出现差异',own:'IC'},
+ {t:'宣布退出线下模式。',pre:'回补完成并抽检通过',own:'乾卫 / IC'}],
+roles:[
+ {c:'DM',n:'业务决策人',d:'方案启停、停接单范围、退出决策。',o:'钱卫（乾卫）',ch:'钉钉 / 电话',cl:'#975a16'},
+ {c:'IC',n:'现场总指挥',d:'War room 值班、跨环节协调、升级上报。',o:'待指定',ch:'War room 会议',cl:'#2b6cb0'},
+ {c:'TECH',n:'技术数据组',d:'新加坡快照导出与分发、面单查询、恢复与回补。',o:'各应用 Owner',ch:'钉钉群',cl:'#6b46c1'},
+ {c:'SORT',n:'分拨实操组',d:'人工分拣、纸质交接。',o:'各分拨中心负责人',ch:'现场 + 电话',cl:'#c05621'},
+ {c:'LINE',n:'干线与末端组',d:'离线调度、配送执行。',o:'运输 / 末端负责人',ch:'现场 + 电话',cl:'#2f855a'},
+ {c:'PUDO',n:'自提运营组',d:'有人值守自提、台账登记。',o:'道阻 / 月鹤 + 站点负责人',ch:'现场 + 电话',cl:'#0e7490'},
+ {c:'CS',n:'客服组',d:'消费者触达、工单、热线降级。离线工单在 sg 单元，不受影响；4 条热线部署在俄罗斯机房，受袭将无法接听，降级至邮件 / 在线渠道。',o:'黎露（空清）',ch:'邮件 / 在线',cl:'#b83280'},
+ {c:'CPL',n:'CP 协同组',d:'与 CP / 末端合作方离线协同。',o:'般波 / 月鹤',ch:'邮件 / 电话',cl:'#4c51bf'},
+ {c:'SPOK',n:'对外发言人',d:'对外信息统一发布，其他角色不对外发声。',o:'IC 兼任',ch:'—',cl:'#4a5568'}],
+checklist:[
+ {x:'确认新加坡库在途快照字段口径，完成导出，双份保存（新加坡侧 + 离线介质）。',o:'TECH',co:'IC',dl:'T1+12h'},
+ {x:'导出并打印离线路由表、分拣码表、自提点 / 柜机清单。',o:'六玄 / 纪臣',co:'TECH',dl:'T1+12h'},
+ {x:'纸质交接单、派送清单、取件台账模板印制并发放各站点。',o:'SORT / LINE / PUDO',co:'IC',dl:'T1+24h'},
+ {x:'CP 与末端合作方离线通讯录（电话 + 邮箱）整理确认。',o:'般波 / 月鹤',co:'CPL',dl:'T1+24h'},
+ {x:'短信网关与通知通道可用性评估；俄语通知话术定稿。',o:'CS + TECH',co:'—',dl:'T1+24h'},
+ {x:'建立 war room 与值班表，确定每日例会节奏。',o:'IC',co:'全员',dl:'T1+24h'},
+ {x:'各应用 Owner 确认本应用离线影响、恢复优先级与回补方式。',o:'各 Owner',co:'TECH',dl:'T1+48h'},
+ {x:'与跨境物流（霖霁 / 落痕）、Agentic CX（空清）对齐衔接口径。',o:'鲤昂',co:'IC',dl:'T1+24h'}],
+ckLabels:{owner:'负责',support:'协同',done:'已完成'},
+forms:[
+ {t:'B.1 纸质交接单',note:'环节间交接包裹时使用，一车一单，双方签字。',fields:[['日期','交接发生日期'],['环节','交立方 → 接立方（站点/车辆）'],['面单号清单','全部交接包裹面单号'],['件数','总件数（须与清单一致）'],['异常件及说明','破损/无码件说明'],['车牌号','运输车辆'],['移交人签字',''],['接收人签字','']]},
+ {t:'B.2 纸质派送清单',note:'小件员领件派送时使用，归班交回站点。',fields:[['日期','派送日期'],['面单号 / 地址 / 电话','领件时打印'],['派送结果','妥投 / 无人 / 拒收'],['POD','签字或照片编号'],['小件员签字','归班确认']]},
+ {t:'B.3 取件台账',note:'有人值守自提点取件核验时使用。',fields:[['日期','取件日期'],['面单号','包裹面单号'],['自提点 / 柜机及格口','存放位置'],['取件凭证','取件码或手机尾号 + 证件'],['取件人签字',''],['操作人签字','']]},
+ {t:'B.4 离线协同登记簿',note:'与 CP 逐单协同（拦截/改址/退回等）时使用。',fields:[['日期','协同发生日期'],['面单号','涉及包裹'],['CP','合作方名称'],['请求类型','拦截 / 改址 / 退回 / 其他'],['渠道','邮件 / 电话 / IM'],['结果','处理结论']]},
+ {t:'B.5 件数差异登记',note:'交接环节发现件数不一致时使用，当场双方确认。',fields:[['日期 / 环节','差异发生位置'],['面单号','差异包裹'],['差异件数','应交 vs 实交'],['双方确认签字','当场确认'],['处理结论','IC 批复后补填']]}],
+printTip:'打印',appsLabel:'受影响系统',groupsWord:'分组',ownerWord:'负责',srcWord:'完整文档',
+footer:{srcZhT:'完整方案（中文 · 钉钉文档）',srcEnT:'完整方案（英文 · 钉钉文档）',note:'本面板为 T1 预警期执行指引，触发 T2 后立即生效。答复口径：仅以新加坡快照为准，查不到的状态一律答复「核实中」。',ver:'v2.0 · 2026-08-25 · 鲤昂（菜鸟俄罗斯 COE）'}
+},en:{
+meta:{title:'RU151 Emergency · Offline Fulfillment Command Panel',htext:'RU151 Offline Fulfillment Command Panel',sub:'In-transit overseas express parcels · fully offline operations'},
+levels:[
+ {id:'t1',icon:'🟡',name:'T1 Warning',desc:'Warning phase: complete the readiness checklist, print forms, be ready to go offline at any time.'},
+ {id:'t2',icon:'🔴',name:'T2 Impact',desc:'RU151 hit or unavailable: stop intake immediately; all stages switch to offline operations per this panel.'},
+ {id:'t3',icon:'🟢',name:'T3 Recovery',desc:'DC restored and data intact: backfill in order; exit offline mode after verification.'}],
+focusTag:'Current focus',
+nav:[['sec-sum','Summary'],['sec-fh','First hour'],['sec-pipe','Pipeline'],['sec-stages','Stage SOP'],['sec-exc','Exceptions'],['sec-backfill','Backfill'],['sec-roles','Roles'],['sec-ck','Checklist'],['sec-forms','Forms']],
+sections:{
+ strategy:{t:'Core Strategy',sub:'Whatever your stage, remember these four rules first.'},
+ fh:{t:'First Hour after T2',sub:'The first 60 minutes after confirmed impact: do these 6 things in order.'},
+ pipe:{t:'Fulfillment Pipeline Overview',sub:'Every step a parcel goes through, and what keeps it moving in offline mode.'},
+ stages:{t:'Stage-by-Stage Instructions',sub:'Find your stage and follow its flow chart top to bottom. Apps marked "inferred" need owner confirmation during T1.'},
+ exc:{t:'Exception Handling',sub:'When these happen, follow the matching flow and log everything.'},
+ backfill:{t:'Backfill & Recovery (T3)',sub:'After DC restoration, execute strictly in order 1→8; each step requires the previous one to be complete.'},
+ roles:{t:'Roles & Responsibilities',sub:'War Room member assignments.'},
+ ck:{t:'T1 Action Checklist',sub:'Start during the warning phase; tick items off, one owner each.'},
+ forms:{t:'Paper Form Templates',sub:'Print and distribute to all sites during T1. Use the button to print a single blank form.'}},
+strategy:[
+ {ic:'🛑',t:'Stop intake, protect in-transit',d:'No new orders; focus everything on delivering the parcels already in the network.'},
+ {ic:'🧾',t:'Physical waybill is truth',d:'Sort codes, addresses and routes follow the printed waybill; system data is for cross-check only.'},
+ {ic:'🗄️',t:'SG replica: read-only',d:'Lookups only, no writes; offline work must not depend on any RU151 interface.'},
+ {ic:'📞',t:'Paper + phone',d:'Every stage has paper forms and phone-based collaboration; keep a full paper trail.'}],
+firsthour:[
+ {r:'IC',x:'Confirm intake suspension and broadcast to all teams.'},
+ {r:'TECH',x:'Freeze and export the latest Singapore in-transit snapshot.'},
+ {r:'ALL',x:'Sites collect paper forms + offline route tables; switch to manual.'},
+ {r:'PUDO',x:'Lockers stop new inbound; switch to staffed pickup.'},
+ {r:'CS',x:'Release CS scripts; freeze external messaging.'},
+ {r:'IC',x:'Start war-room duty and daily cadence.'}],
+pipe:[
+ {ic:'📥',t:'Intake & CP',d:'Stop new orders; CP collaboration by email/phone per parcel'},
+ {ic:'🧭',t:'Routing',d:'Sort by pre-printed Offline Route Tables; no new computation'},
+ {ic:'🏭',t:'Sorting',d:'Manual sort & bag; one paper handover sheet per vehicle'},
+ {ic:'🚛',t:'Linehaul',d:'Fixed-schedule departures with signed dispatch tickets'},
+ {ic:'🛵',t:'Last mile & PUDO',d:'Paper-list delivery + staffed pickup points'}],
+stages:[
+ {ic:'📥',t:'Order Intake & CP Collaboration',own:'Banbo / Yuehe',ag:11,apps:[['link',1],['link-gcs',1],['ruconnect-svr',1],['cn-portal-ru',2],['cngcp-aeru',2],['cngfc-ru',2],['cngdf-ru',2]],nodes:[
+  {t:'start',x:'T2 triggered: intake-stop order received'},
+  {t:'step',r:'IC',x:'Stop all new intake (including cross-border-to-local orders depending on COE intake); broadcast to all.'},
+  {t:'step',r:'TECH',x:'Suspend EDI / data interfaces with CPs.'},
+  {t:'step',r:'CPL',x:'Switch to email + phone + IM; collaborate with CPs case by case.'},
+  {t:'step',r:'CPL',x:'Handle intercept / address-change / return requests by email, one by one.',rec:'Log in the Offline Collaboration Log'},
+  {t:'dec',q:'CP unreachable?',o:[{k:'no',l:'No reply in 2h',x:'CPL escalates to IC; IC escalates major cases to Ganwei.'}]},
+  {t:'out',x:'Records: Offline Collaboration Log, interface suspension log, notice archive'}]},
+ {ic:'🧭',t:'Network & Routing',own:'Liuxuan / Jichen',ag:11,apps:[['global-lnp-networkserver',2],['global-lnp-networkcenter',3],['cnl-network-console',2],['cnl-routing-service',2],['cnl-routing-console-eu',2]],nodes:[
+  {t:'start',x:'Parcel arrives; next hop must be determined'},
+  {t:'dec',q:'Sort code / route info on the waybill?',o:[
+   {k:'yes',l:'Yes',x:'Sort and load per the Offline Route Table (sort code → segment → next hop → CP).'},
+   {k:'no',l:'No',x:'TECH looks up the SG snapshot; staff annotate the sort code manually, then sort.'}]},
+  {t:'rule',x:'Hard rule: no new route computation; rely solely on existing routes / snapshot.'},
+  {t:'out',x:'Records: loading log, manual annotation log'}]},
+ {ic:'📦',t:'Waybill & Fulfillment',own:"Yu'an / Ziran / Yuancheng",ag:6,apps:[['cnl-fulfill-oms',2],['cnl-fulfill-center',2],['cnl-fulfill-console-eu',2]],nodes:[
+  {t:'step',r:'TECH',x:'Stop creating new waybills (linked to intake suspension).'},
+  {t:'step',r:'ALL',x:'In-transit status changes stay on paper ledgers; no system write-back; batch backfill after recovery.',rec:'Stage status ledger'},
+  {t:'dec',q:'Intercept or cancelled order?',o:[{k:'alt',l:'Handle',x:'Freeze physical movement; dispose after IC approval.'}]},
+  {t:'out',x:'Records: stage status ledger, exception order log'}]},
+ {ic:'🏭',t:'Sorting (DMS)',own:"Zhidou / Ying'er / Xuanmi",ag:7,apps:[['gxms',1],['gxms-data',2],['gxms-kernel',2],['wmphu',2]],nodes:[
+  {t:'step',r:'SORT',x:'Shut down network-dependent automation; switch to manual sorting.'},
+  {t:'step',r:'SORT',x:'Sort and bag by the physical waybill sort code / route marks.'},
+  {t:'step',r:'SORT',x:'Use Paper Handover Sheets between stages: waybill list + count + dual signatures; one sheet per vehicle.',rec:'Handover archive'},
+  {t:'dec',q:'Sort code unreadable?',o:[{k:'no',l:'Exception',x:'Move to exception zone → TECH checks the SG replica → annotate and return to flow.'}]},
+  {t:'dec',q:'Count mismatch?',o:[{k:'no',l:'Discrepancy',x:'Both parties confirm and log on the spot; IC decides recheck / compensation.'}]},
+  {t:'out',x:'Records: bagging log, handover archive, exception parcel log, discrepancy log'}]},
+ {ic:'📍',t:'Address Service',own:'Hefeng',ag:2,apps:[['global-division',1],['common-division-service',1]],nodes:[
+  {t:'step',r:'ALL',x:'Address validation / parsing falls back to manual judgment + map search.'},
+  {t:'dec',q:'Address unclear?',o:[{k:'alt',l:'Confirm',x:'CS calls the recipient to confirm.'}]},
+  {t:'dec',q:'Recipient unreachable?',o:[{k:'no',l:'No contact',x:'Hold in the exception zone; follow the exception flow.'}]},
+  {t:'out',x:'Records: address confirmation log, exception parcel log'}]},
+ {ic:'🗄️',t:'Resource Center',own:'Linggu / Liuxuan',ag:7,apps:[['urccenter',2],['urc-console',1],['global-lnp-urc',2],['global-lnp-urcconsole',2]],nodes:[
+  {t:'rule',x:'Freeze all resource scheduling / changes; every stage keeps the status quo.'},
+  {t:'dec',q:'Change truly needed?',o:[{k:'alt',l:'Approve',x:'Execute only after manual war-room approval.'}]},
+  {t:'out',x:'Records: approval log'}]},
+ {ic:'🚛',t:'Linehaul & Settlement',own:'Qianfeng / Shujiu / Tianming',ag:6,apps:[['cnexport-local-lts',2],['cntmp',2],['cnl-settle-bridge',2]],nodes:[
+  {t:'step',r:'LINE',x:'Fixed-schedule departures with Offline Dispatch Tickets: route, driver, plate, count, sign-off.'},
+  {t:'step',r:'LINE',x:'Loading / unloading strictly per paper handover sheets.'},
+  {t:'dec',q:'Count discrepancy?',o:[{k:'no',l:'Mismatch',x:'Record on the spot, both parties confirm, report to IC.'}]},
+  {t:'step',r:'LINE',x:'Settlement suspended; retain waybills + handover sheets for post-recovery reconciliation.'},
+  {t:'out',x:'Records: dispatch ticket archive, discrepancy log, retained documents'}]},
+ {ic:'🛵',t:'Last-Mile Delivery',own:'Xingmai',ag:2,apps:[['cnexport-local-lds',2]],nodes:[
+  {t:'step',r:'LINE',x:'Couriers take parcels against Paper Delivery Lists (waybill no., address, phone) and deliver offline.'},
+  {t:'step',r:'LINE',x:'Call first; if the phone fails, go straight to the address.'},
+  {t:'dec',q:'Delivery result?',o:[
+   {k:'yes',l:'Delivered',x:'Paper POD: signature or photo; mark as delivered.'},
+   {k:'no',l:'Absent',x:'Return and log; 2nd attempt or switch to pickup.'},
+   {k:'no',l:'Refused',x:'Note on the list; return and log.'}]},
+  {t:'step',r:'LINE',x:'Daily wrap-up: stations aggregate results and report to the war room offline.',rec:'Daily report'},
+  {t:'out',x:'Records: delivery lists, POD archive, daily reports'}]},
+ {ic:'🔐',t:'Lockers & PUDO',own:'Daozu / Yuehe / Guke',ag:18,apps:[['cng-locker-sop',2],['cnl-infra-locker-cabinet',2],['cnl-infra-locker-workstation',2],['cnl-infra-csp',2],['cnl-infra-plannerconsole',2],['cnt-cabinet-workbench',1],['cnt-cabinet-service-platform',1],['cngpp-ae',2],['cngpp-pudo-sop',2],['cnexport-infra-pudo-workbench',2]],nodes:[
+  {t:'rule',x:'Lockers stop new inbound: new parcels go to staffed PUDO points or courier delivery.'},
+  {t:'step',r:'TECH',x:'Parcels already in lockers: TECH pulls pickup-code / cell mapping from the SG replica; sites print Pickup Ledgers.'},
+  {t:'step',r:'PUDO',x:'Pickup verification: pickup code or phone digits + ID.'},
+  {t:'dec',q:'Locker will not open?',o:[{k:'no',l:'Failure',x:'Manual opening per emergency procedure; log every opening: waybill no., time, operator.'}]},
+  {t:'out',x:'Records: inbound ledger, pickup ledger, manual opening log'}]},
+ {ic:'⚙️',t:'Middleware & Infra',own:'Banbo',ag:2,apps:[['cnarch-mw-nbp',1],['cnarch-mw-nbp-console',1]],nodes:[
+  {t:'step',r:'ALL',x:'Middleware down = no message scheduling; all stages fall back to paper + phone.'},
+  {t:'step',r:'TECH',x:'Assess SMS-gateway and notification-channel availability for consumer outreach.'}]}],
+exceptions:[
+ {ic:'📵',t:'Recipient unreachable',f:'Door delivery with a notice left → pickup notice after 3 attempts → offline return log if still failing.',o:'LINE / CS',r:'Delivery list, return log'},
+ {ic:'🧩',t:'Damaged / unidentifiable waybill',f:'Isolate in exception zone → look up SG replica by parcel features / order no. → seal and log if unidentifiable.',o:'SORT / TECH',r:'Exception parcel log'},
+ {ic:'⚖️',t:'Count discrepancy',f:'Both parties confirm and log on the spot → IC decides recheck / compensation flow.',o:'LINE / SORT',r:'Discrepancy log'},
+ {ic:'↩️',t:'Return orders',f:'Offline return log + physical return → backfill after recovery.',o:'CPL / LINE',r:'Return log'},
+ {ic:'💎',t:'High-value / sensitive parcels',f:'Dedicated registration, locked storage, dual-person handover.',o:'SORT / PUDO',r:'Special parcel ledger'}],
+backfill:[
+ {t:'Confirm recovery conditions: Group confirms RU151 availability; data integrity check passes.',pre:'Group notice + integrity report',own:'TECH'},
+ {t:'Backfill waybill status.',pre:'Step 1 complete',own:'TECH + stages'},
+ {t:'Backfill sorting handover records.',pre:'Step 2 complete',own:'SORT'},
+ {t:'Backfill delivery POD.',pre:'Step 3 complete',own:'LINE'},
+ {t:'Backfill pickup ledgers.',pre:'Step 3 complete',own:'PUDO'},
+ {t:'Settlement reconciliation.',pre:'Steps 2–5 complete',own:'Settlement'},
+ {t:'Discrepancy handling: everything goes to a manual review queue; no automatic overwriting.',pre:'Any discrepancy during backfill',own:'IC'},
+ {t:'Declare exit from offline mode.',pre:'Backfill complete; spot checks pass',own:'Ganwei / IC'}],
+roles:[
+ {c:'DM',n:'Decision Maker',d:'Plan activation/termination, intake-suspension scope, exit decision.',o:'Qian Wei (Ganwei)',ch:'DingTalk / phone',cl:'#975a16'},
+ {c:'IC',n:'Incident Commander',d:'War-room duty, cross-stage coordination, escalation.',o:'TBD',ch:'War-room call',cl:'#2b6cb0'},
+ {c:'TECH',n:'Data & Tech',d:'SG snapshot export & distribution, waybill lookups, recovery & backfill.',o:'App owners',ch:'DingTalk group',cl:'#6b46c1'},
+ {c:'SORT',n:'Sorting Ops',d:'Manual sorting, paper handovers.',o:'Sorting center leads',ch:'On-site + phone',cl:'#c05621'},
+ {c:'LINE',n:'Linehaul & Last Mile',d:'Offline dispatch, delivery execution.',o:'Transport / last-mile leads',ch:'On-site + phone',cl:'#2f855a'},
+ {c:'PUDO',n:'Lockers & PUDO',d:'Staffed pickup, ledger records.',o:'Daozu / Yuehe + site leads',ch:'On-site + phone',cl:'#0e7490'},
+ {c:'CS',n:'Customer Service',d:'Consumer outreach, tickets, hotline downgrade. Offline ticketing runs in the SG unit and is unaffected; the 4 hotlines sit in the Russia DC and will be unreachable if hit — downgrade to email / online.',o:'Li Lu (Kongqing)',ch:'Email / online',cl:'#b83280'},
+ {c:'CPL',n:'CP Liaison',d:'Offline collaboration with CPs / last-mile partners.',o:'Banbo / Yuehe',ch:'Email / phone',cl:'#4c51bf'},
+ {c:'SPOK',n:'Spokesperson',d:'Single channel for external messaging; no other role speaks externally.',o:'IC (concurrent)',ch:'—',cl:'#4a5568'}],
+checklist:[
+ {x:'Confirm SG snapshot field scope; complete export; store two copies (SG side + offline media).',o:'TECH',co:'IC',dl:'T1+12h'},
+ {x:'Export and print offline route tables, sort-code tables, PUDO / locker lists.',o:'Liuxuan / Jichen',co:'TECH',dl:'T1+12h'},
+ {x:'Print and distribute paper handover sheets, delivery lists, pickup ledgers to all sites.',o:'SORT / LINE / PUDO',co:'IC',dl:'T1+24h'},
+ {x:'Compile offline contact directory (phone + email) for CPs and last-mile partners.',o:'Banbo / Yuehe',co:'CPL',dl:'T1+24h'},
+ {x:'Assess SMS gateway / notification channels; finalize Russian notice scripts.',o:'CS + TECH',co:'—',dl:'T1+24h'},
+ {x:'Set up war room and duty roster; fix daily cadence.',o:'IC',co:'All',dl:'T1+24h'},
+ {x:'Each app owner confirms offline impact, recovery priority and backfill method.',o:'App owners',co:'TECH',dl:'T1+48h'},
+ {x:'Align handoff scope with cross-border logistics (Linji / Luohen) and Agentic CX (Kongqing).',o:"Li'ang",co:'IC',dl:'T1+24h'}],
+ckLabels:{owner:'Owner',support:'Support',done:'done'},
+forms:[
+ {t:'B.1 Paper Handover Sheet',note:'For handing parcels between stages; one sheet per vehicle; dual signatures.',fields:[['Date','Date of handover'],['Stage','From → To (site/vehicle)'],['Waybill list','All waybill numbers handed over'],['Count','Total pieces (must match list)'],['Exceptions','Damaged/unlabeled parcels with notes'],['Plate no.','Transport vehicle'],['Handed-by signature',''],['Received-by signature','']]},
+ {t:'B.2 Paper Delivery List',note:'For courier pickup and delivery; returned to the station at end of shift.',fields:[['Date','Delivery date'],['Waybill no. / address / phone','Pre-printed at pickup'],['Result','Delivered / absent / refused'],['POD','Signature or photo reference'],['Courier signature','End-of-shift confirmation']]},
+ {t:'B.3 Pickup Ledger',note:'For pickup verification at staffed pickup points.',fields:[['Date','Pickup date'],['Waybill no.','Parcel waybill number'],['PUDO / locker & cell','Storage location'],['Proof','Pickup code or phone digits + ID'],['Recipient signature',''],['Staff signature','']]},
+ {t:'B.4 Offline Collaboration Log',note:'For per-parcel collaboration with CPs (intercept / address change / return).',fields:[['Date','Collaboration date'],['Waybill no.','Parcel involved'],['CP','Partner name'],['Request type','Intercept / address change / return / other'],['Channel','Email / phone / IM'],['Result','Resolution']]},
+ {t:'B.5 Count Discrepancy Log',note:'When counts do not match during handover; both parties confirm on the spot.',fields:[['Date / stage','Where it occurred'],['Waybill no.','Affected parcels'],['Discrepancy','Expected vs actual count'],['Dual signatures','Confirmed on the spot'],['Resolution','Filled after IC ruling']]}],
+printTip:'Print',appsLabel:'Impacted systems',groupsWord:'groups',ownerWord:'Owner',srcWord:'Full document',
+footer:{srcZhT:'Full plan (Chinese · DingTalk doc)',srcEnT:'Full plan (English · DingTalk doc)',note:'This panel is the T1 readiness guide and takes effect immediately upon T2 trigger. Answer policy: strictly per the SG snapshot; unknown status is always answered as "under verification".',ver:'v2.0 · 2026-08-25 · Liang (Cainiao Russia COE)'}
+},ru:{
+meta:{title:'ЧС RU151 · Офлайн-панель управления доставкой',htext:'RU151: офлайн-панель управления доставкой',sub:'Посылки Overseas Express в пути · полностью ручной режим'},
+levels:[
+ {id:'t1',icon:'🟡',name:'T1 Готовность',desc:'Фаза готовности: выполните чек-лист подготовки, распечатайте формы, будьте готовы перейти в офлайн в любой момент.'},
+ {id:'t2',icon:'🔴',name:'T2 Удар',desc:'RU151 поражён или недоступен: немедленно остановить приём заказов; все этапы переходят в офлайн по этой панели.'},
+ {id:'t3',icon:'🟢',name:'T3 Восстановление',desc:'ЦОД восстановлен, данные целы: заполняйте данные по порядку; выход из офлайна после проверки.'}],
+focusTag:'Фокус текущей фазы',
+nav:[['sec-sum','Суть'],['sec-fh','Первый час'],['sec-pipe','Весь процесс'],['sec-stages','По этапам'],['sec-exc','Исключения'],['sec-backfill','Восстановление'],['sec-roles','Роли'],['sec-ck','Чек-лист'],['sec-forms','Формы']],
+sections:{
+ strategy:{t:'Ключевая стратегия',sub:'На каком бы этапе вы ни работали — сначала запомните эти четыре правила.'},
+ fh:{t:'Первый час после T2',sub:'Первые 60 минут после подтверждения удара: выполните эти 6 действий по порядку.'},
+ pipe:{t:'Обзор всего процесса доставки',sub:'Каждый шаг посылки и за счёт чего он работает в офлайн-режиме.'},
+ stages:{t:'Поэтапные инструкции',sub:'Найдите свой этап и выполняйте его схему сверху вниз. Приложения с пометкой «предпол.» должны подтвердить владельцы на фазе T1.'},
+ exc:{t:'Работа с исключениями',sub:'Если случилось что-то из списка — действуйте по схеме и всё фиксируйте.'},
+ backfill:{t:'Восстановление данных (T3)',sub:'После восстановления ЦОД строго по порядку 1→8; следующий шаг только после завершения предыдущего.'},
+ roles:{t:'Роли и обязанности',sub:'Распределение ролей в командном пункте (War Room).'},
+ ck:{t:'Чек-лист действий T1',sub:'Начинайте в фазе готовности; отмечайте выполненное, у каждого пункта есть ответственный.'},
+ forms:{t:'Шаблоны бумажных форм',sub:'Распечатайте и раздайте всем пунктам на фазе T1. Кнопка справа печатает одну пустую форму.'}},
+strategy:[
+ {ic:'🛑',t:'Стоп приём, защита посылок в пути',d:'Новые заказы не принимаем; все силы — на доставку того, что уже в пути.'},
+ {ic:'🧾',t:'Бумажная накладная — источник истины',d:'Код сортировки, адрес и маршрут — по печатной накладной; системные данные только для сверки.'},
+ {ic:'🗄️',t:'Сингапурская копия: только чтение',d:'Только запросы, без записи; офлайн-работа не зависит ни от каких интерфейсов RU151.'},
+ {ic:'📞',t:'Бумага + телефон',d:'У каждого этапа есть бумажные формы и телефонная связь; ведём полный бумажный след.'}],
+firsthour:[
+ {r:'IC',x:'Подтвердить остановку приёма заказов и объявить всем командам.'},
+ {r:'TECH',x:'Зафиксировать и выгрузить свежую сингапурскую копию данных по посылкам в пути.'},
+ {r:'ALL',x:'Пункты получают бумажные формы + офлайн-таблицы маршрутов; переход на ручной режим.'},
+ {r:'PUDO',x:'Постаматы не принимают новые посылки; переход на пункты выдачи с персоналом.'},
+ {r:'CS',x:'Раздать скрипты поддержки; заморозить все внешние сообщения.'},
+ {r:'IC',x:'Запустить дежурство war room и ежедневные созвоны.'}],
+pipe:[
+ {ic:'📥',t:'Приём и CP',d:'Стоп новых заказов; связь с CP по почте/телефону по каждой посылке'},
+ {ic:'🧭',t:'Маршрутизация',d:'Сортировка по печатным офлайн-таблицам маршрутов; без новых расчётов'},
+ {ic:'🏭',t:'Сортировка',d:'Ручная сортировка; один бумажный акт на каждую машину'},
+ {ic:'🚛',t:'Магистраль',d:'Рейсы по расписанию с подписанными диспетчерскими листами'},
+ {ic:'🛵',t:'Последняя миля и выдача',d:'Доставка по бумажным спискам + пункты выдачи с персоналом'}],
+stages:[
+ {ic:'📥',t:'Приём заказов и работа с CP',own:'Banbo / Yuehe',ag:11,apps:[['link',1],['link-gcs',1],['ruconnect-svr',1],['cn-portal-ru',2],['cngcp-aeru',2],['cngfc-ru',2],['cngdf-ru',2]],nodes:[
+  {t:'start',x:'T2: получен приказ остановить приём заказов'},
+  {t:'step',r:'IC',x:'Остановить приём всех новых заказов (включая трансграничные, переходящие в локальные); объявить всем.'},
+  {t:'step',r:'TECH',x:'Приостановить EDI / интерфейсы обмена данными с CP.'},
+  {t:'step',r:'CPL',x:'Перейти на почту + телефон + IM; работать с CP по каждой посылке отдельно.'},
+  {t:'step',r:'CPL',x:'Запросы на перехват / смену адреса / возврат обрабатывать по почте, по одному.',rec:'Запись в «Журнал офлайн-взаимодействия»'},
+  {t:'dec',q:'CP не выходит на связь?',o:[{k:'no',l:'Нет ответа 2 ч',x:'CPL эскалирует IC; по крупным случаям IC докладывает Ganwei.'}]},
+  {t:'out',x:'Записи: журнал офлайн-взаимодействия, журнал остановки интерфейсов, архив уведомлений'}]},
+ {ic:'🧭',t:'Сеть и маршрутизация',own:'Liuxuan / Jichen',ag:11,apps:[['global-lnp-networkserver',2],['global-lnp-networkcenter',3],['cnl-network-console',2],['cnl-routing-service',2],['cnl-routing-console-eu',2]],nodes:[
+  {t:'start',x:'Посылка прибыла; нужно определить следующий пункт'},
+  {t:'dec',q:'На накладной есть код сортировки / маршрут?',o:[
+   {k:'yes',l:'Да',x:'Сортировать и грузить по офлайн-таблице маршрутов (код → участок → следующий пункт → CP).'},
+   {k:'no',l:'Нет',x:'TECH ищет в сингапурской копии; код сортировки вписывается вручную, затем сортировка.'}]},
+  {t:'rule',x:'Жёсткое правило: никаких новых расчётов маршрутов; только готовые маршруты / копия.'},
+  {t:'out',x:'Записи: журнал погрузки, журнал ручных пометок'}]},
+ {ic:'📦',t:'Накладные и фулфилмент',own:"Yu'an / Ziran / Yuancheng",ag:6,apps:[['cnl-fulfill-oms',2],['cnl-fulfill-center',2],['cnl-fulfill-console-eu',2]],nodes:[
+  {t:'step',r:'TECH',x:'Не создавать новые накладные (связано с остановкой приёма).'},
+  {t:'step',r:'ALL',x:'Изменения статусов — только в бумажных журналах; в систему не пишем; внесём всё после восстановления.',rec:'Журнал статусов по этапам'},
+  {t:'dec',q:'Перехват или отменённый заказ?',o:[{k:'alt',l:'Действие',x:'Остановить физическое перемещение; решение после подтверждения IC.'}]},
+  {t:'out',x:'Записи: журнал статусов, журнал исключений по заказам'}]},
+ {ic:'🏭',t:'Сортировочный центр (DMS)',own:"Zhidou / Ying'er / Xuanmi",ag:7,apps:[['gxms',1],['gxms-data',2],['gxms-kernel',2],['wmphu',2]],nodes:[
+  {t:'step',r:'SORT',x:'Отключить автоматизацию, зависящую от сети; перейти на ручную сортировку.'},
+  {t:'step',r:'SORT',x:'Сортировать и формировать мешки по коду сортировки / отметке направления на накладной.'},
+  {t:'step',r:'SORT',x:'Передача между этапами по бумажному акту: список накладных + количество + две подписи; один акт на машину.',rec:'Архив актов'},
+  {t:'dec',q:'Код сортировки не читается?',o:[{k:'no',l:'Исключение',x:'В зону исключений → TECH проверяет сингапурскую копию → дописать код и вернуть в поток.'}]},
+  {t:'dec',q:'Количество не сходится?',o:[{k:'no',l:'Расхождение',x:'Обе стороны подтверждают и записывают на месте; IC решает: розыск или компенсация.'}]},
+  {t:'out',x:'Записи: журнал мешков, архив актов, журнал исключений, журнал расхождений'}]},
+ {ic:'📍',t:'Служба адресов',own:'Hefeng',ag:2,apps:[['global-division',1],['common-division-service',1]],nodes:[
+  {t:'step',r:'ALL',x:'Проверка / разбор адреса — вручную + поиск по карте.'},
+  {t:'dec',q:'Адрес непонятен?',o:[{k:'alt',l:'Уточнить',x:'CS звонит получателю для подтверждения.'}]},
+  {t:'dec',q:'Получатель недоступен?',o:[{k:'no',l:'Нет контакта',x:'Оставить в зоне исключений; далее по схеме исключений.'}]},
+  {t:'out',x:'Записи: журнал подтверждения адресов, журнал исключений'}]},
+ {ic:'🗄️',t:'Центр ресурсов',own:'Linggu / Liuxuan',ag:7,apps:[['urccenter',2],['urc-console',1],['global-lnp-urc',2],['global-lnp-urcconsole',2]],nodes:[
+  {t:'rule',x:'Заморозить все изменения и перераспределения ресурсов; всё остаётся как есть.'},
+  {t:'dec',q:'Изменение действительно нужно?',o:[{k:'alt',l:'Согласовать',x:'Выполнять только после ручного одобрения war room.'}]},
+  {t:'out',x:'Записи: журнал одобрений'}]},
+ {ic:'🚛',t:'Магистраль и расчёты',own:'Qianfeng / Shujiu / Tianming',ag:6,apps:[['cnexport-local-lts',2],['cntmp',2],['cnl-settle-bridge',2]],nodes:[
+  {t:'step',r:'LINE',x:'Рейсы по фиксированному расписанию с диспетчерским листом: маршрут, водитель, номер машины, количество, подпись.'},
+  {t:'step',r:'LINE',x:'Погрузка / разгрузка строго по бумажным актам передачи.'},
+  {t:'dec',q:'Расхождение по количеству?',o:[{k:'no',l:'Не сходится',x:'Записать на месте, подтвердить обеим сторонам, доложить IC.'}]},
+  {t:'step',r:'LINE',x:'Расчёты приостановлены; накладные + акты сохранить для сверки после восстановления.'},
+  {t:'out',x:'Записи: архив диспетчерских листов, журнал расхождений, сохранённые документы'}]},
+ {ic:'🛵',t:'Доставка последней мили',own:'Xingmai',ag:2,apps:[['cnexport-local-lds',2]],nodes:[
+  {t:'step',r:'LINE',x:'Курьер получает посылки по бумажному списку доставки (номер накладной, адрес, телефон) и доставляет офлайн.'},
+  {t:'step',r:'LINE',x:'Сначала позвонить; если телефон недоступен — ехать по адресу.'},
+  {t:'dec',q:'Результат доставки?',o:[
+   {k:'yes',l:'Доставлено',x:'Бумажное POD: подпись или фото; отметить как доставленное.'},
+   {k:'no',l:'Никого нет',x:'Вернуть и записать; повторная попытка или пункт выдачи.'},
+   {k:'no',l:'Отказ',x:'Пометка в списке; вернуть и записать.'}]},
+  {t:'step',r:'LINE',x:'Итог дня: пункт сводит результаты и передаёт в war room офлайн.',rec:'Ежедневный отчёт'},
+  {t:'out',x:'Записи: списки доставки, архив POD, ежедневные отчёты'}]},
+ {ic:'🔐',t:'Постаматы и пункты выдачи',own:'Daozu / Yuehe / Guke',ag:18,apps:[['cng-locker-sop',2],['cnl-infra-locker-cabinet',2],['cnl-infra-locker-workstation',2],['cnl-infra-csp',2],['cnl-infra-plannerconsole',2],['cnt-cabinet-workbench',1],['cnt-cabinet-service-platform',1],['cngpp-ae',2],['cngpp-pudo-sop',2],['cnexport-infra-pudo-workbench',2]],nodes:[
+  {t:'rule',x:'Постаматы не принимают новые посылки: новые — в пункты выдачи с персоналом или курьером.'},
+  {t:'step',r:'TECH',x:'Посылки уже в постаматах: TECH выгружает коды выдачи / ячейки из сингапурской копии; пункт печатает журнал выдачи.'},
+  {t:'step',r:'PUDO',x:'Проверка при выдаче: код выдачи или последние цифры телефона + документ.'},
+  {t:'dec',q:'Постамат не открывается?',o:[{k:'no',l:'Сбой',x:'Ручное вскрытие по аварийной инструкции; каждая операция записывается: накладная, время, сотрудник.'}]},
+  {t:'out',x:'Записи: журнал приёма, журнал выдачи, журнал вскрытий'}]},
+ {ic:'⚙️',t:'Промежуточное ПО и инфраструктура',own:'Banbo',ag:2,apps:[['cnarch-mw-nbp',1],['cnarch-mw-nbp-console',1]],nodes:[
+  {t:'step',r:'ALL',x:'Middleware недоступен = обмен сообщениями не работает; все этапы переходят на бумагу + телефон.'},
+  {t:'step',r:'TECH',x:'Оценить доступность SMS-шлюза и каналов уведомлений для связи с клиентами.'}]}],
+exceptions:[
+ {ic:'📵',t:'Получатель не выходит на связь',f:'Доставка по адресу с запиской → после 3 попыток уведомление о самовывозе → если не помогло, офлайн-оформление возврата.',o:'LINE / CS',r:'Список доставки, журнал возвратов'},
+ {ic:'🧩',t:'Накладная повреждена / не читается',f:'Изолировать в зоне исключений → поиск в сингапурской копии по признакам посылки / номеру заказа → если не найдено, опечатать и записать.',o:'SORT / TECH',r:'Журнал исключений'},
+ {ic:'⚖️',t:'Расхождение по количеству',f:'Обе стороны подтверждают и записывают на месте → IC решает: розыск или компенсация.',o:'LINE / SORT',r:'Журнал расхождений'},
+ {ic:'↩️',t:'Возвратные заказы',f:'Офлайн-журнал возвратов + физический возврат → дозапись после восстановления.',o:'CPL / LINE',r:'Журнал возвратов'},
+ {ic:'💎',t:'Ценные / особые посылки',f:'Отдельный учёт, запираемый шкаф, передача вдвоём.',o:'SORT / PUDO',r:'Журнал особых посылок'}],
+backfill:[
+ {t:'Подтвердить условия восстановления: Группа подтверждает доступность RU151; проверка целостности данных пройдена.',pre:'Уведомление Группы + отчёт о проверке',own:'TECH'},
+ {t:'Восстановить статусы накладных.',pre:'Шаг 1 завершён',own:'TECH + этапы'},
+ {t:'Восстановить записи передачи на сортировке.',pre:'Шаг 2 завершён',own:'SORT'},
+ {t:'Восстановить POD по доставке.',pre:'Шаг 3 завершён',own:'LINE'},
+ {t:'Восстановить журналы выдачи.',pre:'Шаг 3 завершён',own:'PUDO'},
+ {t:'Сверка расчётных документов.',pre:'Шаги 2–5 завершены',own:'Расчёты'},
+ {t:'Расхождения: всё в очередь ручной проверки; автоматическая перезапись запрещена.',pre:'Любое расхождение при дозаписи',own:'IC'},
+ {t:'Объявить выход из офлайн-режима.',pre:'Дозапись завершена, выборочные проверки пройдены',own:'Ganwei / IC'}],
+roles:[
+ {c:'DM',n:'Принимающий решения',d:'Включение/выключение плана, рамки остановки приёма, решение о выходе.',o:'Qian Wei (Ganwei)',ch:'DingTalk / телефон',cl:'#975a16'},
+ {c:'IC',n:'Руководитель инцидента',d:'Дежурство war room, координация между этапами, эскалация.',o:'Назначается',ch:'Созвон war room',cl:'#2b6cb0'},
+ {c:'TECH',n:'Техника и данные',d:'Выгрузка и рассылка сингапурской копии, поиск по накладным, восстановление и дозапись.',o:'Владельцы приложений',ch:'Группа DingTalk',cl:'#6b46c1'},
+ {c:'SORT',n:'Сортировка',d:'Ручная сортировка, бумажные акты передачи.',o:'Руководители сортировочных центров',ch:'На месте + телефон',cl:'#c05621'},
+ {c:'LINE',n:'Магистраль и последняя миля',d:'Офлайн-диспетчеризация, выполнение доставки.',o:'Руководители транспорта / последней мили',ch:'На месте + телефон',cl:'#2f855a'},
+ {c:'PUDO',n:'Постаматы и пункты выдачи',d:'Выдача с персоналом, ведение журналов.',o:'Daozu / Yuehe + руководители пунктов',ch:'На месте + телефон',cl:'#0e7490'},
+ {c:'CS',n:'Служба поддержки',d:'Связь с клиентами, тикеты, деградация горячей линии. Офлайн-тикеты работают в SG-контуре и не затронуты; 4 горячие линии в российском ЦОД при ударе не будут отвечать — переход на почту / онлайн.',o:'Li Lu (Kongqing)',ch:'Почта / онлайн',cl:'#b83280'},
+ {c:'CPL',n:'Связь с CP',d:'Офлайн-взаимодействие с CP / партнёрами последней мили.',o:'Banbo / Yuehe',ch:'Почта / телефон',cl:'#4c51bf'},
+ {c:'SPOK',n:'Пресс-секретарь',d:'Единый канал внешних сообщений; остальные роли внешне не выступают.',o:'IC (по совместительству)',ch:'—',cl:'#4a5568'}],
+checklist:[
+ {x:'Подтвердить состав полей сингапурской копии; завершить выгрузку; сохранить две копии (SG + офлайн-носитель).',o:'TECH',co:'IC',dl:'T1+12ч'},
+ {x:'Выгрузить и распечатать офлайн-таблицы маршрутов, таблицы кодов сортировки, списки пунктов выдачи / постаматов.',o:'Liuxuan / Jichen',co:'TECH',dl:'T1+12ч'},
+ {x:'Распечатать и раздать всем пунктам бумажные акты, списки доставки, журналы выдачи.',o:'SORT / LINE / PUDO',co:'IC',dl:'T1+24ч'},
+ {x:'Составить офлайн-справочник контактов CP и партнёров последней мили (телефон + почта).',o:'Banbo / Yuehe',co:'CPL',dl:'T1+24ч'},
+ {x:'Оценить доступность SMS-шлюза / каналов уведомлений; утвердить тексты уведомлений на русском.',o:'CS + TECH',co:'—',dl:'T1+24ч'},
+ {x:'Организовать war room и график дежурств; зафиксировать ежедневные созвоны.',o:'IC',co:'Все',dl:'T1+24ч'},
+ {x:'Каждый владелец приложения подтверждает влияние офлайна, приоритет восстановления и способ дозаписи.',o:'Владельцы приложений',co:'TECH',dl:'T1+48ч'},
+ {x:'Согласовать границы с трансграничной логистикой (Linji / Luohen) и Agentic CX (Kongqing).',o:"Li'ang",co:'IC',dl:'T1+24ч'}],
+ckLabels:{owner:'Ответственный',support:'Помощь',done:'выполнено'},
+forms:[
+ {t:'B.1 Акт приёма-передачи',note:'Для передачи посылок между этапами; один акт на машину; две подписи.',fields:[['Дата','Дата передачи'],['Этап','От кого → кому (пункт/машина)'],['Список накладных','Все номера передаваемых посылок'],['Количество','Всего мест (должно совпадать со списком)'],['Исключения','Повреждённые/без кода, с пометкой'],['Номер машины','Транспорт'],['Подпись передавшего',''],['Подпись принявшего','']]},
+ {t:'B.2 Список доставки',note:'Для получения и доставки курьером; сдаётся на пункт в конце смены.',fields:[['Дата','Дата доставки'],['Накладная / адрес / телефон','Печатается при получении'],['Результат','Доставлено / никого / отказ'],['POD','Подпись или номер фото'],['Подпись курьера','Подтверждение конца смены']]},
+ {t:'B.3 Журнал выдачи',note:'Для проверки при выдаче в пунктах с персоналом.',fields:[['Дата','Дата выдачи'],['Номер накладной','Номер посылки'],['Пункт / постамат и ячейка','Место хранения'],['Основание','Код выдачи или последние цифры телефона + документ'],['Подпись получателя',''],['Подпись сотрудника','']]},
+ {t:'B.4 Журнал офлайн-взаимодействия',note:'Для работы с CP по каждой посылке (перехват / смена адреса / возврат).',fields:[['Дата','Дата взаимодействия'],['Номер накладной','Посылка'],['CP','Название партнёра'],['Тип запроса','Перехват / смена адреса / возврат / другое'],['Канал','Почта / телефон / IM'],['Результат','Итог обработки']]},
+ {t:'B.5 Журнал расхождений по количеству',note:'При несовпадении количества во время передачи; обе стороны подтверждают на месте.',fields:[['Дата / этап','Где обнаружено'],['Номер накладной','Посылки'],['Расхождение','Ожидалось vs фактически'],['Две подписи','Подтверждено на месте'],['Решение','Заполняется после решения IC']]}],
+printTip:'Печать',appsLabel:'Затронутые системы',groupsWord:'групп',ownerWord:'Ответственный',srcWord:'Полный документ',
+footer:{srcZhT:'Полный план (китайский · DingTalk)',srcEnT:'Полный план (английский · DingTalk)',note:'Эта панель — руководство фазы T1; при наступлении T2 вступает в силу немедленно. Правило ответов клиентам: только по сингапурской копии; неизвестный статус — всегда «уточняется».',ver:'v2.0 · 2026-08-25 · Liang (Cainiao Russia COE)'}
+}};
+let lang=(()=>{const s=lsGet('ru151lang');if(s&&DATA[s])return s;const n=(navigator.language||'en').slice(0,2).toLowerCase();return DATA[n]?n:'en';})();
+let T=lsGet('ru151t')||'t1';
+if(!['t1','t2','t3'].includes(T))T='t1';
+try{const hp=new URLSearchParams(location.hash.slice(1));const hl=hp.get('lang'),ht=hp.get('t');
+if(hl&&DATA[hl]){lang=hl;lsSet('ru151lang',hl);}
+if(ht&&['t1','t2','t3'].includes(ht)){T=ht;lsSet('ru151t',ht);}
+window.__sec=hp.get('sec');}catch(e){}
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function ckState(){try{const s=JSON.parse(lsGet('ru151ck')||'[]');return Array.isArray(s)?s:[]}catch(e){return[]}}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rb=c=>'<span class="rb rb-'+c+'">'+c+'</span>';
+const KNOWN=['IC','TECH','SORT','LINE','PUDO','CS','CPL','DM','SPOK','ALL'];
+const rbAuto=c=>KNOWN.includes(c)?rb(c):'<span class="rb rb-ALL">'+esc(c)+'</span>';
+function flowHtml(nodes){let h='',n=0;nodes.forEach((nd,i)=>{if(i>0)h+='<div class="farrow"></div>';
+ if(nd.t==='start')h+='<div class="fnode start">'+esc(nd.x)+'</div>';
+ else if(nd.t==='rule')h+='<div class="fnode rule">⛔ '+esc(nd.x)+'</div>';
+ else if(nd.t==='out')h+='<div class="fnode out">🗂 '+esc(nd.x)+'</div>';
+ else if(nd.t==='step'){n++;h+='<div class="fnode step"><div class="fnum">'+n+'</div><div class="fbody"><div class="fmeta">'+rb(nd.r)+'</div><div class="ftext">'+esc(nd.x)+'</div>'+(nd.rec?'<div class="frec">📋 '+esc(nd.rec)+'</div>':'')+'</div></div>';}
+ else if(nd.t==='dec'){h+='<div class="fnode dec"><div class="fq">❓ '+esc(nd.q)+'</div><div class="opts">'+nd.o.map(o=>'<div class="opt"><span class="olabel '+o.k+'">'+esc(o.l)+'</span><span class="otext">'+esc(o.x)+'</span></div>').join('')+'</div></div>';}});
+ return '<div class="flow">'+h+'</div>';}
+function render(){
+ const D=DATA[lang];
+ document.documentElement.lang=lang==='zh'?'zh-CN':lang;
+ document.title=D.meta.title;
+ document.getElementById('htext').textContent=D.meta.htext;
+ document.getElementById('hdot').style.background=T==='t1'?'var(--amber)':T==='t2'?'var(--red)':'var(--green)';
+ document.getElementById('tseg').innerHTML=D.levels.map(l=>'<button data-t="'+l.id+'" class="'+l.id+(T===l.id?' on':'')+'">'+esc(l.name)+'</button>').join('');
+ document.getElementById('lseg').innerHTML=[['zh','中'],['en','EN'],['ru','РУ']].map(p=>'<button data-l="'+p[0]+'"'+(lang===p[0]?' class="on"':'')+'>'+p[1]+'</button>').join('');
+ const lv=D.levels.find(l=>l.id===T);
+ const focusMap={t1:['sec-ck','sec-forms'],t2:['sec-fh','sec-stages','sec-exc'],t3:['sec-backfill']};
+ const focus=focusMap[T];
+ const secH=(id,title,sub)=>'<div class="sec-h"><span class="bar"></span><h2>'+esc(title)+'</h2><span class="focus-tag">'+esc(D.focusTag)+'</span></div>'+(sub?'<div class="sec-sub">'+esc(sub)+'</div>':'');
+ let h='';
+ h+='<div class="banner '+T+'"><div class="bic">'+lv.icon+'</div><div><h2>'+esc(lv.name)+' · '+esc(D.meta.sub)+'</h2><p>'+esc(lv.desc)+'</p></div></div>';
+ h+='<nav class="nav">'+D.nav.map(n=>'<a href="#'+n[0]+'">'+esc(n[1])+'</a>').join('')+'</nav>';
+ h+='<section id="sec-sum"'+(focus.includes('sec-sum')?' class="focus"':'')+'>'+secH('sec-sum',D.sections.strategy.t,D.sections.strategy.sub)+'<div class="grid g4">'+D.strategy.map(s=>'<div class="card scard"><div class="ic">'+s.ic+'</div><h3>'+esc(s.t)+'</h3><p>'+esc(s.d)+'</p></div>').join('')+'</div></section>';
+ h+='<section id="sec-fh"'+(focus.includes('sec-fh')?' class="focus"':'')+'>'+secH('sec-fh',D.sections.fh.t,D.sections.fh.sub)+'<div class="fh">'+flowHtml(D.firsthour.map(f=>({t:'step',r:f.r,x:f.x})))+'</div></section>';
+ h+='<section id="sec-pipe"'+(focus.includes('sec-pipe')?' class="focus"':'')+'>'+secH('sec-pipe',D.sections.pipe.t,D.sections.pipe.sub)+'<div class="pipe">'+D.pipe.map((p,i)=>(i?'<div class="parrow">➜</div>':'')+'<div class="pnode"><div class="ic">'+p.ic+'</div><h4>'+esc(p.t)+'</h4><p>'+esc(p.d)+'</p></div>').join('')+'</div></section>';
+ h+='<section id="sec-stages"'+(focus.includes('sec-stages')?' class="focus"':'')+'>'+secH('sec-stages',D.sections.stages.t,D.sections.stages.sub)+D.stages.map(s=>'<div class="stage"><div class="stage-h"><div class="sic">'+s.ic+'</div><div style="flex:1;min-width:0"><h3>'+esc(s.t)+'</h3><div class="own">'+esc(D.ownerWord)+'：'+esc(s.own)+'</div></div></div><div class="stage-b"><details class="apps"><summary>'+esc(D.appsLabel)+' · '+s.ag+' '+esc(D.groupsWord)+'</summary><div class="appchips">'+s.apps.map(a=>'<span class="appchip">'+esc(a[0])+' <b>×'+a[1]+'</b></span>').join('')+'</div></details>'+flowHtml(s.nodes)+'</div></div>').join('')+'</section>';
+ h+='<section id="sec-exc"'+(focus.includes('sec-exc')?' class="focus"':'')+'>'+secH('sec-exc',D.sections.exc.t,D.sections.exc.sub)+'<div class="grid g2">'+D.exceptions.map(e=>'<div class="exc"><h4>'+e.ic+' '+esc(e.t)+'</h4><div class="fl">'+esc(e.f)+'</div><div class="fo">'+rb(e.o.split(' / ')[0])+(e.o.includes(' / ')?rb(e.o.split(' / ')[1]):'')+' 📋 '+esc(e.r)+'</div></div>').join('')+'</div></section>';
+ h+='<section id="sec-backfill"'+(focus.includes('sec-backfill')?' class="focus"':'')+'>'+secH('sec-backfill',D.sections.backfill.t,D.sections.backfill.sub)+'<div class="tl">'+D.backfill.map((b,i)=>'<div class="tstep"><h4><span class="tn">'+(i+1)+'</span>'+esc(b.t)+'</h4><div class="tp">🔓 '+esc(b.pre)+' · '+rbAuto(b.own.split(' ')[0])+' '+esc(b.own)+'</div></div>').join('')+'</div></section>';
+ h+='<section id="sec-roles"'+(focus.includes('sec-roles')?' class="focus"':'')+'>'+secH('sec-roles',D.sections.roles.t,D.sections.roles.sub)+'<div class="grid g3">'+D.roles.map(r=>'<div class="role"><div class="code" style="background:'+r.cl+'">'+r.c+'</div><div style="flex:1;min-width:0"><h4>'+esc(r.n)+'</h4><div class="rd">'+esc(r.d)+'</div><div class="ro"><b>'+esc(r.o)+'</b> · '+esc(r.ch)+'</div></div></div>').join('')+'</div></section>';
+ const done=ckState();
+ h+='<section id="sec-ck"'+(focus.includes('sec-ck')?' class="focus"':'')+'>'+secH('sec-ck',D.sections.ck.t,D.sections.ck.sub)+'<div class="ckbar"><span class="cnt" id="ckcnt"></span><div class="prog"><i id="ckbar"></i></div></div>'+D.checklist.map((c,i)=>'<label class="ck'+(done.includes(i)?' done':'')+'" data-i="'+i+'"><input type="checkbox"'+(done.includes(i)?' checked':'')+'><div style="flex:1"><div class="ct">'+esc(c.x)+'</div><div class="meta"><span class="chip">'+esc(D.ckLabels.owner)+'：'+esc(c.o)+'</span>'+(c.co&&c.co!=='—'?'<span class="chip">'+esc(D.ckLabels.support)+'：'+esc(c.co)+'</span>':'')+'<span class="chip dl">'+esc(c.dl)+'</span></div></div></label>').join('')+'</section>';
+ h+='<section id="sec-forms"'+(focus.includes('sec-forms')?' class="focus"':'')+'>'+secH('sec-forms',D.sections.forms.t,D.sections.forms.sub)+D.forms.map((f,i)=>'<div class="form-card" data-f="'+i+'"><div class="fh2"><h3>'+esc(f.t)+'</h3><button class="pbtn no-print" title="'+esc(D.printTip)+'">⎙</button></div><div class="form-note">'+esc(f.note)+'</div>'+f.fields.map(fd=>'<div class="frow"><div class="flabel">'+esc(fd[0])+'</div><div class="fline"></div>'+(fd[1]?'<div class="fdesc">'+esc(fd[1])+'</div>':'')+'</div>').join('')+'</div>').join('')+'</section>';
+ h+='<footer><div>'+esc(D.footer.ver)+'</div><div class="flinks"><a href="https://alidocs.dingtalk.com/i/nodes/o14dA3GK8gQlkoYwcEa6Ry4zV9ekBD76" target="_blank" rel="noopener">📄 '+esc(D.footer.srcZhT)+'</a><a href="https://alidocs.dingtalk.com/i/nodes/a9E05BDRVQRkezKGCPMdz2KAJ63zgkYA" target="_blank" rel="noopener">📄 '+esc(D.footer.srcEnT)+'</a></div><div class="note">'+esc(D.footer.note)+'</div></footer>';
+ document.getElementById('app').innerHTML=h;
+ updCk();
+ bind();
+ if(window.__sec){const el=document.getElementById(window.__sec);if(el)el.scrollIntoView();window.__sec=null;}
+}
+function updCk(){const D=DATA[lang];const done=ckState();const el=document.getElementById('ckcnt');if(el){el.textContent=done.length+' / '+D.checklist.length+' '+esc(D.ckLabels.done);document.getElementById('ckbar').style.width=(done.length/D.checklist.length*100)+'%';}}
+function bind(){
+ document.querySelectorAll('#tseg button').forEach(b=>b.onclick=()=>{T=b.dataset.t;lsSet('ru151t',T);render();});
+ document.querySelectorAll('#lseg button').forEach(b=>b.onclick=()=>{lang=b.dataset.l;lsSet('ru151lang',lang);render();});
+ document.querySelectorAll('.ck input').forEach(inp=>inp.onchange=()=>{const i=+inp.closest('.ck').dataset.i;let s=ckState();if(inp.checked){if(!s.includes(i))s.push(i);}else{s=s.filter(x=>x!==i);}lsSet('ru151ck',JSON.stringify(s));inp.closest('.ck').classList.toggle('done',inp.checked);updCk();});
+ document.querySelectorAll('.pbtn').forEach(b=>b.onclick=()=>{const card=b.closest('.form-card');card.classList.add('printing');document.body.classList.add('pf');
+  const clean=()=>{card.classList.remove('printing');document.body.classList.remove('pf');window.removeEventListener('afterprint',clean);};
+  window.addEventListener('afterprint',clean);window.print();setTimeout(clean,1500);});
+}
+render();
+</script>
+</body>
+</html>
