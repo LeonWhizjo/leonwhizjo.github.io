@@ -227,7 +227,7 @@
 
 <script>
 /*__DATA_START__*/
-const DATA = {"generatedAt":"2026-10-16 17:12 CST","days":[{"date":"10/13","sc":{"total":907,"cdek":906,"x5":1,"other":0,"done":907,"pending":0,"origin":{"RLKN":58,"RLCK":238,"RLHW":173,"RLFN":1,"RLHZ":437}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}}]};
+const DATA = {"generatedAt":"2026-10-16 17:19 CST","days":[{"date":"10/13","sc":{"total":907,"cdek":906,"x5":1,"other":0,"done":907,"pending":0,"origin":{"RLKN":58,"RLCK":238,"RLHW":173,"RLFN":1,"RLHZ":437}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}}]};
 /*__DATA_END__*/
 
 /* 订单前缀 → HUB 名称映射（源：钉钉表格 RESCODE Detail 列B RESCODE NAME，waybill 前缀匹配） */
@@ -273,10 +273,10 @@ en:{
   n2:["Methodology",'Aggregated per day on the Date column (MMDD). “Done” = <i>done by Tony</i> marked DONE. “Initiated by SC” covers sorting-centre stock plus pipeline pulls (currently registered and executed by TONY). “Initiated by HUB” = HUB stock orders. “Reverse” = reverse-to-forward, handled by the fulfilment correction tool and tracked separately.'],
   n3:["Reroute plan",'All three order types go live <b>10/28</b>; cap of <b>500 orders</b> per reroute batch; pipeline orders are pulled and reported twice daily at <b>10:00 / 17:00</b>; from 10/30 every RD order must be rerouted before entering a sorting centre (DME / OVB / VVO).'],
   n4:["Routing rules",'Self-pickup RD-Locker&amp;PUDO → CDEK-PUDO or X5-PUDO (nearest first). Door delivery RD-to-door → CDEK-to-door (YANDEX not used for now due to war risk at the Moscow Zone A data centre).'],
-  n5:["Refresh",'The board re-reads the source sheet and republishes on a daily schedule; live point volumes are in the <a href="https://fbi.alibaba-inc.com/dashboard/view/page.htm?id=1552366" target="_blank">FBI point report</a>. Lyudmila monitors sorting-centre 3PL volumes and requests extra pick-up vehicles.'],
+  n5:["Refresh",'The board re-reads the source sheet and republishes every hour on the hour; live point volumes are in the <a href="https://fbi.alibaba-inc.com/dashboard/view/page.htm?id=1552366" target="_blank">FBI point report</a>. Lyudmila monitors sorting-centre 3PL volumes and requests extra pick-up vehicles.'],
   n6:["Prefix ↔ HUB map",'Order-number prefixes are matched to RESCODE NAME (column B) of the <a href="https://alidocs.dingtalk.com/i/nodes/a9E05BDRVQRkezKGC74MKxMlJ63zgkYA" target="_blank">RESCODE Detail</a> sheet by waybill-number rule, identifying the originating HUB.'],
   foot_src:"SOURCE · DINGTALK SHEET “reroute to 3PL” · NODE gvNG4YZ7Jnxop15OCAkXzlNoW2LD0oRE",
-  foot_gen:function(g){return "GENERATED "+g+" · AUTO-REFRESH DAILY"},
+  foot_gen:function(g){return "GENERATED "+g+" · AUTO-REFRESH HOURLY"},
   docTitle:"RD → 3PL REROUTE · Daily Report"
 },
 zh:{
@@ -313,10 +313,10 @@ zh:{
   n2:["统计口径",'按 Sheet 中 Date 列（MMDD）逐日聚合；「已重路由」= done by Tony 列为 DONE；「SC 发起」含分拨内库存 + 管道内捞单（现 Sheet 中由 TONY 统一登记执行）；「HUB 发起」= HUB 内库存订单；「逆向」= 逆向转正向（履约订正工具处理，单独统计）。'],
   n3:["重路由计划",'三类订单自 <b>10/28</b> 起正式执行，单次重路由限额 <b>500 单</b>；管道内订单每日 <b>10:00 / 17:00</b> 各捞单上报一次；10/30 后所有 RD 订单须在进入分拨（DME / OVB / VVO）前完成重路由。'],
   n4:["流向规则",'自提单 RD-Locker&amp;PUDO → CDEK-PUDO 或 X5-PUDO（距离优先）；到门单 RD-to-door → CDEK-to-door（YANDEX 因莫斯科可用区A战争风险暂不启用）。'],
-  n5:["看板更新",'每日定时重读源表并重新发布；点位实时单量另见 <a href="https://fbi.alibaba-inc.com/dashboard/view/page.htm?id=1552366" target="_blank">FBI 点位报表</a>。3PL 提货车辆由 Lyudmila 定时观测分拨 3PL 单量后通知增派。'],
+  n5:["看板更新",'每小时整点定时重读源表并重新发布；点位实时单量另见 <a href="https://fbi.alibaba-inc.com/dashboard/view/page.htm?id=1552366" target="_blank">FBI 点位报表</a>。3PL 提货车辆由 Lyudmila 定时观测分拨 3PL 单量后通知增派。'],
   n6:["前缀↔HUB 映射",'订单号前缀按运单号规则关联 <a href="https://alidocs.dingtalk.com/i/nodes/a9E05BDRVQRkezKGC74MKxMlJ63zgkYA" target="_blank">RESCODE Detail 表</a> 的 RESCODE NAME（B 列），用于识别订单来源 HUB。'],
   foot_src:"数据源 · 钉钉表格 “reroute to 3PL” · NODE gvNG4YZ7Jnxop15OCAkXzlNoW2LD0oRE",
-  foot_gen:function(g){return "生成于 "+g+" · 每日自动刷新"},
+  foot_gen:function(g){return "生成于 "+g+" · 每小时自动刷新"},
   docTitle:"RD → 3PL 重路由日报看板"
 },
 ru:{
@@ -353,10 +353,10 @@ ru:{
   n2:["Методология",'Агрегация по дням согласно столбцу Date (MMDD). «Готово» = DONE в столбце <i>done by Tony</i>. «Инициировано SC» включает склад сортировочного центра и выборку из потока (реестр и исполнение — TONY). «Инициировано HUB» = заказы на складе HUB. «Реверс» = обратное→прямое, обрабатывается инструментом корректировки исполнения и учитывается отдельно.'],
   n3:["План перенаправления",'Все три типа заказов запускаются <b>28.10</b>; лимит <b>500 посылок</b> за батч; заказы в потоке выбираются и передаются дважды в день в <b>10:00 / 17:00</b>; с 30.10 каждый заказ RD должен быть перенаправлен до попадания в сортировочный центр (DME / OVB / VVO).'],
   n4:["Маршрутизация",'Постамат/PUDO RD-Locker&amp;PUDO → CDEK-PUDO или X5-PUDO (ближайший приоритет). До двери RD-to-door → CDEK-to-door (YANDEX пока не используется из-за риска по ЦОД «Москва зона A»).'],
-  n5:["Обновление",'Панель ежедневно перечитывает источник и перепубликуется; фактические объёмы по точкам — в <a href="https://fbi.alibaba-inc.com/dashboard/view/page.htm?id=1552366" target="_blank">отчёте FBI</a>. Людмила контролирует объёмы 3PL на сортировочных центрах и запрашивает дополнительный транспорт.'],
+  n5:["Обновление",'Панель ежечасно перечитывает источник и перепубликуется; фактические объёмы по точкам — в <a href="https://fbi.alibaba-inc.com/dashboard/view/page.htm?id=1552366" target="_blank">отчёте FBI</a>. Людмила контролирует объёмы 3PL на сортировочных центрах и запрашивает дополнительный транспорт.'],
   n6:["Префикс ↔ HUB",'Префиксы номеров заказов сопоставляются с RESCODE NAME (столбец B) листа <a href="https://alidocs.dingtalk.com/i/nodes/a9E05BDRVQRkezKGC74MKxMlJ63zgkYA" target="_blank">RESCODE Detail</a> по правилу номера накладной — это HUB-отправитель.'],
   foot_src:"ИСТОЧНИК · ТАБЛИЦА DINGTALK “reroute to 3PL” · NODE gvNG4YZ7Jnxop15OCAkXzlNoW2LD0oRE",
-  foot_gen:function(g){return "СФОРМИРОВАНО "+g+" · ОБНОВЛЕНИЕ ЕЖЕДНЕВНО"},
+  foot_gen:function(g){return "СФОРМИРОВАНО "+g+" · ОБНОВЛЕНИЕ ЕЖЕЧАСНО"},
   docTitle:"RD → 3PL REROUTE · Ежедневный отчёт"
 }
 };
