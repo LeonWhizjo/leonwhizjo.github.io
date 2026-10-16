@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RD → 3PL Reroute 看板 · Daily Report</title>
+<title>RD → 3PL REROUTE · Daily Report</title>
 <style>
   :root{
     --bg:#0a0f16; --panel:#0e1520; --panel2:#111a28; --line:#1c2a3e; --line2:#23354d;
@@ -24,6 +24,9 @@
       radial-gradient(700px 300px at 92% 0%, rgba(181,123,240,.05), transparent 60%);}
   .wrap{max-width:1280px;margin:0 auto;position:relative;z-index:1}
 
+  /* English mono tags are decorative in zh/ru, redundant in en */
+  html[lang="en"] .mono-tag{display:none}
+
   /* ── header ─────────────────────────────── */
   header{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between;
     padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:22px}
@@ -33,32 +36,44 @@
   .sigil svg{position:absolute;inset:0;margin:auto}
   h1{font-family:var(--mono);font-size:20px;font-weight:600;letter-spacing:.06em;color:#eaf4fc}
   h1 em{font-style:normal;color:var(--hud)}
-  .sub{font-size:12px;color:var(--txt2);letter-spacing:.08em;margin-top:2px}
-  .h-right{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+  .sub{font-size:12px;color:var(--txt2);letter-spacing:.04em;margin-top:3px}
+  .h-right{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
   .chip{font-family:var(--mono);font-size:11px;letter-spacing:.05em;padding:4px 11px;border-radius:999px;
-    border:1px solid var(--line2);color:var(--txt2);background:var(--panel)}
+    border:1px solid var(--line2);color:var(--txt2);background:var(--panel);white-space:nowrap}
   .chip .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);
     margin-right:7px;vertical-align:1px;box-shadow:0 0 6px var(--ok)}
   .chip .dot.amber{background:var(--warn);box-shadow:0 0 6px var(--warn)}
 
+  /* language switcher */
+  .lang{display:flex;align-items:center;gap:0;border:1px solid var(--line2);border-radius:999px;
+    overflow:hidden;background:var(--panel)}
+  .lang button{appearance:none;border:0;background:transparent;color:var(--txt2);cursor:pointer;
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;padding:5px 13px;transition:background .18s,color .18s}
+  .lang button+button{border-left:1px solid var(--line)}
+  .lang button:hover{color:#cfe4f2}
+  .lang button[aria-pressed="true"]{background:rgba(55,200,240,.16);color:var(--hud);
+    box-shadow:inset 0 -2px 0 var(--hud)}
+  .lang .globe{padding:5px 0 5px 11px;color:var(--txt3);display:flex;align-items:center}
+
   /* ── generic panel ──────────────────────── */
   section{margin-bottom:26px}
-  .sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:12px}
+  .sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:12px;flex-wrap:wrap}
   .sec-h .no{font-family:var(--mono);font-size:11px;color:var(--hud);letter-spacing:.12em;border:1px solid var(--hud-dim);
     padding:1px 7px;border-radius:4px;background:rgba(55,200,240,.06)}
-  .sec-h h2{font-size:15.5px;font-weight:600;color:#e8f2fa;letter-spacing:.03em}
-  .sec-h .en{font-family:var(--mono);font-size:11px;color:var(--txt3);letter-spacing:.08em}
+  .sec-h h2{font-size:15.5px;font-weight:600;color:#e8f2fa;letter-spacing:.02em}
+  .sec-h .mono-tag{font-family:var(--mono);font-size:11px;color:var(--txt3);letter-spacing:.08em}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;position:relative;overflow:hidden}
   .panel::before,.panel::after{content:"";position:absolute;width:10px;height:10px;pointer-events:none;opacity:.8}
   .panel::before{top:-1px;left:-1px;border-top:2px solid var(--hud);border-left:2px solid var(--hud);border-top-left-radius:10px}
   .panel::after{bottom:-1px;right:-1px;border-bottom:2px solid var(--hud);border-right:2px solid var(--hud);border-bottom-right-radius:10px}
 
   /* ── KPI ────────────────────────────────── */
-  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:12px}
   .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px 12px;position:relative}
-  .kpi .lab{font-size:11.5px;color:var(--txt2);letter-spacing:.03em;display:flex;flex-wrap:wrap;gap:2px 10px;align-items:baseline}
+  .kpi .lab{font-size:11.5px;color:var(--txt2);letter-spacing:.02em;display:flex;flex-wrap:wrap;gap:2px 10px;align-items:baseline;padding-right:20px}
   .kpi .lab .zh{white-space:nowrap}
-  .kpi .lab .en{font-family:var(--mono);font-size:9.5px;color:var(--txt3);letter-spacing:.08em;margin-left:auto}
+  .kpi .lab .mono-tag{font-family:var(--mono);font-size:9.5px;color:var(--txt3);letter-spacing:.08em;margin-left:auto}
   .kpi .val{font-family:var(--mono);font-size:29px;font-weight:700;color:#eef7ff;margin-top:6px;letter-spacing:.02em}
   .kpi .val small{font-size:12px;font-weight:400;color:var(--txt3);margin-left:5px}
   .kpi .tag{position:absolute;top:12px;right:14px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg)}
@@ -69,7 +84,7 @@
 
   /* ── daily table ────────────────────────── */
   table{width:100%;border-collapse:collapse;font-size:13px}
-  thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt2);
+  thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2);
     text-align:right;padding:10px 14px;border-bottom:1px solid var(--line2);background:var(--panel2);white-space:nowrap}
   thead th:first-child{text-align:left}
   tbody td{padding:9px 14px;text-align:right;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:13.5px;color:#dcebf6;white-space:nowrap}
@@ -79,10 +94,10 @@
   td .z{color:var(--txt3)}
   .d-ok{color:var(--ok)} .d-warn{color:var(--warn)} .d-dead{color:var(--dead)}
   .pill{display:inline-block;font-size:10.5px;font-family:var(--mono);padding:1px 8px;border-radius:999px;
-    border:1px solid currentColor;letter-spacing:.06em}
-  .datecell b{color:#eaf4fc;font-weight:600} .datecell span{color:var(--txt3);font-size:11px;margin-left:6px;font-family:var(--mono)}
+    border:1px solid currentColor;letter-spacing:.06em;white-space:nowrap}
+  .datecell b{color:#eaf4fc;font-weight:600}
 
-  /* ── chart ──────────────────────────────── */
+  /* ── chart ─────────────────────────────── */
   .chart-body{padding:18px 18px 10px}
   .bars{display:flex;align-items:flex-end;gap:clamp(8px,2.6vw,26px);height:170px;padding-top:22px}
   .bcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;min-width:26px}
@@ -90,17 +105,19 @@
   .bseg{width:100%}
   .bseg.cdek{background:linear-gradient(180deg,#4fd4f5,#1d7ba0)}
   .bseg.x5{background:linear-gradient(180deg,#c996f7,#7a41b8)}
+  .bseg.other{background:linear-gradient(180deg,#7fb0d8,#3d6a90)}
   .btop{font-family:var(--mono);font-size:11.5px;color:var(--hud);margin-bottom:5px;font-weight:600}
   .blab{font-family:var(--mono);font-size:11px;color:var(--txt2);margin-top:8px}
-  .legend{display:flex;gap:18px;margin-top:14px;padding:0 2px 8px;font-size:12px;color:var(--txt2)}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;padding:0 2px 8px;font-size:12px;color:var(--txt2)}
   .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+  .legend .unit{margin-left:auto;color:var(--txt3);font-family:var(--mono);font-size:11px}
   .empty-chart{padding:34px 18px;text-align:center;color:var(--txt3);font-size:13px}
 
   /* ── split layout ───────────────────────── */
   .cols2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   @media(max-width:860px){.cols2{grid-template-columns:1fr}}
-  .mini-h{font-size:13px;font-weight:600;color:#cfe4f2;letter-spacing:.03em;padding:12px 16px 0}
-  .mini-h .en{font-family:var(--mono);font-size:10px;color:var(--txt3);margin-left:8px;letter-spacing:.08em}
+  .mini-h{font-size:13px;font-weight:600;color:#cfe4f2;letter-spacing:.02em;padding:12px 16px 0}
+  .mini-h .mono-tag{font-family:var(--mono);font-size:10px;color:var(--txt3);margin-left:8px;letter-spacing:.08em}
   .prefix-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:12px 16px 8px;background:var(--panel2)}
   .prefix-bar i{height:100%}
   .prefix-legend{display:flex;flex-wrap:wrap;gap:6px 16px;padding:2px 16px 14px;font-size:12px;color:var(--txt2)}
@@ -112,17 +129,16 @@
   .pl-row:last-child{border-bottom:0}
   .pl-key b{font-family:var(--mono);color:#eaf4fc;font-weight:600;letter-spacing:.04em}
   .pl-hub{color:var(--txt);font-family:var(--mono);font-size:12px;letter-spacing:.01em;word-break:break-word}
-  .pl-hub.none{color:var(--txt3);font-style:italic}
   .pl-num{color:var(--txt2);font-family:var(--mono);font-size:12px;white-space:nowrap}
   @media(max-width:520px){.pl-row{grid-template-columns:66px 1fr;gap:6px 8px}.pl-num{grid-column:2;text-align:right}}
   .empty-state{padding:26px 18px 24px;text-align:center}
-  .empty-state .ico{font-family:var(--mono);color:var(--warn);letter-spacing:.22em;font-size:11px;margin-bottom:8px}
-  .empty-state p{font-size:13px;color:var(--txt2);max-width:520px;margin:0 auto}
-  .empty-state .plan{margin-top:12px;font-family:var(--mono);font-size:11px;color:var(--txt3)}
+  .empty-state .ico{font-family:var(--mono);color:var(--warn);letter-spacing:.2em;font-size:11px;margin-bottom:8px}
+  .empty-state p{font-size:13px;color:var(--txt2);max-width:560px;margin:0 auto;line-height:1.65}
+  .empty-state .plan{margin-top:12px;font-family:var(--mono);font-size:11px;color:var(--txt3);line-height:1.6}
 
   /* ── notes / footer ─────────────────────── */
   .notes{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px}
-  .notes li{list-style:none;font-size:12.5px;color:var(--txt2);padding-left:18px;position:relative;margin-bottom:7px}
+  .notes li{list-style:none;font-size:12.5px;color:var(--txt2);padding-left:18px;position:relative;margin-bottom:7px;line-height:1.65}
   .notes li:last-child{margin-bottom:0}
   .notes li::before{content:"▸";position:absolute;left:2px;color:var(--hud-dim);font-size:11px;top:2px}
   .notes b{color:#d5e6f2;font-weight:600}
@@ -145,52 +161,52 @@
       </svg>
     </div>
     <div>
-      <h1>RD → 3PL <em>REROUTE</em> 日报看板</h1>
-      <div class="sub">RD_DSP 关停重路由 · 逐日单量与流向监控 — DAILY REROUTE COMMAND REPORT</div>
+      <h1><span data-i18n="titleA">RD → 3PL</span> <em data-i18n="titleB">REROUTE</em> <span data-i18n="titleC"></span></h1>
+      <div class="sub" data-i18n="subtitle"></div>
     </div>
   </div>
   <div class="h-right">
-    <div class="chip" id="gen-chip"><span class="dot"></span>数据刷新 <span id="gen-time">—</span></div>
-    <div class="chip" id="latest-chip"><span class="dot amber"></span>最新登记日 <span id="latest-date">—</span></div>
+    <div class="lang" role="group" aria-label="Language">
+      <span class="globe"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="8" cy="8" r="6.2"/><path d="M1.8 8h12.4M8 1.8c1.7 1.8 2.6 4 2.6 6.2S9.7 12.4 8 14.2C6.3 12.4 5.4 10.2 5.4 8S6.3 3.6 8 1.8z"/></svg></span>
+      <button data-lang="en" aria-pressed="true">EN</button>
+      <button data-lang="zh" aria-pressed="false">中文</button>
+      <button data-lang="ru" aria-pressed="false">RU</button>
+    </div>
+    <div class="chips">
+      <div class="chip"><span class="dot"></span><span data-i18n="chip_gen"></span> <span id="gen-time">—</span></div>
+      <div class="chip"><span class="dot amber"></span><span data-i18n="chip_latest"></span> <span id="latest-date">—</span></div>
+    </div>
   </div>
 </header>
 
-<!-- KPI -->
 <section>
-  <div class="sec-h"><span class="no">01</span><h2>累计总览</h2><span class="en">CUMULATIVE OVERVIEW</span></div>
+  <div class="sec-h"><span class="no">01</span><h2 data-i18n="s1"></h2><span class="mono-tag">CUMULATIVE OVERVIEW</span></div>
   <div class="kpis" id="kpis"></div>
 </section>
 
-<!-- by-day table -->
 <section>
-  <div class="sec-h"><span class="no">02</span><h2>逐日重路由单量</h2><span class="en">BY DAY · REROUTED VOLUME</span></div>
-  <div class="panel">
-    <div style="overflow-x:auto">
-      <table id="day-table"></table>
-    </div>
-  </div>
+  <div class="sec-h"><span class="no">02</span><h2 data-i18n="s2"></h2><span class="mono-tag">BY DAY · REROUTED VOLUME</span></div>
+  <div class="panel"><div style="overflow-x:auto"><table id="day-table"></table></div></div>
 </section>
 
-<!-- chart -->
 <section>
-  <div class="sec-h"><span class="no">03</span><h2>每日 3PL 流向趋势</h2><span class="en">DAILY 3PL FLOW TREND</span></div>
+  <div class="sec-h"><span class="no">03</span><h2 data-i18n="s3"></h2><span class="mono-tag">DAILY 3PL FLOW TREND</span></div>
   <div class="panel">
-    <div class="chart-body">
+    <div class="chart-body" id="chart-body">
       <div class="bars" id="bars"></div>
       <div class="legend">
         <span><i style="background:var(--cdek)"></i>CDEK</span>
         <span><i style="background:var(--x5)"></i>X5</span>
-        <span><i style="background:var(--other)"></i>其他 3PL</span>
-        <span style="margin-left:auto;color:var(--txt3)">单位：单 / parcels</span>
+        <span><i style="background:var(--other)"></i><span data-i18n="lg_other"></span></span>
+        <span class="unit" data-i18n="lg_unit"></span>
       </div>
     </div>
-    <div class="empty-chart" id="bars-empty" style="display:none">暂无逐日登记数据 — NO REGISTERED DATA YET</div>
+    <div class="empty-chart" id="bars-empty" style="display:none" data-i18n="chart_empty"></div>
   </div>
 </section>
 
-<!-- SC / HUB split -->
 <section>
-  <div class="sec-h"><span class="no">04</span><h2>发起方汇总</h2><span class="en">INITIATOR BREAKDOWN · SC / HUB / REVERSE</span></div>
+  <div class="sec-h"><span class="no">04</span><h2 data-i18n="s4"></h2><span class="mono-tag">INITIATOR BREAKDOWN · SC / HUB / REVERSE</span></div>
   <div class="cols2">
     <div class="panel" id="sc-panel"></div>
     <div class="panel" id="hub-panel"></div>
@@ -198,39 +214,162 @@
   <div class="panel" style="margin-top:14px" id="rev-panel"></div>
 </section>
 
-<!-- notes -->
 <section>
-  <div class="sec-h"><span class="no">05</span><h2>口径与计划说明</h2><span class="en">NOTES & PLAN</span></div>
-  <ul class="notes">
-    <li><b>数据来源</b>：钉钉表格 <a href="https://alidocs.dingtalk.com/i/nodes/gvNG4YZ7Jnxop15OCAkXzlNoW2LD0oRE" target="_blank">reroute to 3PL</a>（Report by SC / Report by HUB / reverse order 三个 Sheet），背景与流程见 <a href="https://alidocs.dingtalk.com/i/nodes/P7QG4Yx2Jpx4OolYCqOlGZAkJ9dEq3XD" target="_blank">重路由计划</a>。</li>
-    <li><b>统计口径</b>：按 Sheet 中 Date 列（MMDD）逐日聚合；「已重路由」= done by Tony 列为 DONE；「SC 发起」含分拨内库存 + 管道内捞单（现 Sheet 中由 TONY 统一登记执行）；「HUB 发起」= HUB 内库存订单；「逆向」= 逆向转正向（履约订正工具处理，单独统计）。</li>
-    <li><b>重路由计划</b>：三类订单自 <b>10/28</b> 起正式执行，单次重路由限额 <b>500 单</b>；管道内订单每日 <b>10:00 / 17:00</b> 各捞单上报一次；10/30 后所有 RD 订单须在进入分拨（DME / OVB / VVO）前完成重路由。</li>
-    <li><b>流向规则</b>：自提单 RD-Locker&PUDO → CDEK-PUDO 或 X5-PUDO（距离优先）；到门单 RD-to-door → CDEK-to-door（YANDEX 因莫斯科可用区A战争风险暂不启用）。</li>
-    <li><b>看板更新</b>：每日定时重读源表并重新发布；点位实时单量另见 <a href="https://fbi.alibaba-inc.com/dashboard/view/page.htm?id=1552366" target="_blank">FBI 点位报表</a>。3PL 提货车辆由 Lyudmila 定时观测分拨 3PL 单量后通知增派。</li>
-    <li><b>前缀↔HUB 映射</b>：订单号前缀按运单号规则关联 <a href="https://alidocs.dingtalk.com/i/nodes/a9E05BDRVQRkezKGC74MKxMlJ63zgkYA" target="_blank">RESCODE Detail 表</a> 的 RESCODE NAME（B 列），用于识别订单来源 HUB。</li>
-  </ul>
+  <div class="sec-h"><span class="no">05</span><h2 data-i18n="s5"></h2><span class="mono-tag">NOTES &amp; PLAN</span></div>
+  <ul class="notes" id="notes"></ul>
 </section>
 
 <footer>
-  <span>SOURCE · DINGTALK SHEET “reroute to 3PL” · NODE gvNG4YZ7Jnxop15OCAkXzlNoW2LD0oRE</span>
+  <span data-i18n="foot_src"></span>
   <span id="foot-gen"></span>
 </footer>
 </div>
 
 <script>
 /*__DATA_START__*/
-const DATA = {"generatedAt":"2026-10-16 16:58 CST","days":[{"date":"10/13","sc":{"total":907,"cdek":906,"x5":1,"other":0,"done":907,"pending":0,"origin":{"RLKN":58,"RLCK":238,"RLHW":173,"RLFN":1,"RLHZ":437}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}}]};
+const DATA = {"generatedAt":"2026-10-16 17:12 CST","days":[{"date":"10/13","sc":{"total":907,"cdek":906,"x5":1,"other":0,"done":907,"pending":0,"origin":{"RLKN":58,"RLCK":238,"RLHW":173,"RLFN":1,"RLHZ":437}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}}]};
 /*__DATA_END__*/
 
 /* 订单前缀 → HUB 名称映射（源：钉钉表格 RESCODE Detail 列B RESCODE NAME，waybill 前缀匹配） */
 /*__HUBMAP_START__*/
 const HUBMAP = {
-"RLCK":"Ekaterinburg_HUB_EPOD(NordTransit)","RLFN":"Blagoveschensk_HUB(Sinergiya)_EPOD","RLHW":"Khabarovsk_HUB(Amur)_EPOD","RLHZ":"Vladivostok_HUB(Amur)_EPOD","RLKN":"Blagoveschensk_HUB(IP_Zhdankin)_EPOD","RLAG":"Chelyabinsk_HUB Epod(Bizon)","RLAH":"Сhelyabinsk_HUB Epod(Express74)","RLAI":"Ufa_HUB Epod(Vipmail)","RLAK":"Saransk_HUB Epod(IP Khalikova)","RLAL":"Samara_HUB Epod(Ks-Express)","RLAM":"Ulyanovsk_HUB Epod(SimService)","RLAQ":"Vladimir_HUB Epod(Alenka)","RLAR":"Ivanovo_HUB Epod(Сherepaha)","RLAS":"Tula_HUB Epod(IP Frolin)","RLAV":"Kaluga_HUB_Epod(Vestovoy)","RLAW":"Orel_HUB_Epod(FPS)","RLAX":"Smolensk_HUB_Epod(FPS)","RLAY":"Saratov_HUB_Epod(Alfa-Express)","RLBA":"Volgograd_HUB_Epod(FlyExpress)","RLBB":"Tambov_HUB_EPOD(Courier)","RLBE":"Ekaterinburg_HUB_EPOD(Ruconnect)","RLBG":"Saratov_HUB_EPOD(EMEX)","RLBQ":"Belgorod_HUB_Epod(EuroBussines)","RLBS":"Astrahan_HUB_Epod(Index)","RLCD":"Kazan_HUB_Epod(IP Petrov)","RLCE":"N.Chelny_HUB_Epod(IP Petrov)","RLCF":"Al'met'evsk_HUB_Epod(IP Petrov)","RLCG":"Krasnodar_HUB_Epod(NDS)","RLCH":"N.Chelny_HUB_Epod(RTK)_new","RLCJ":"Kazan_HUB_Epod(RTK)_new","RLCL":"Kurgan_HUB_EPOD(IP Sukhanov)","RLCM":"Nalchik_HUB_EPOD(KBR)","RLCN":"Vladikavkaz_HUB_EPOD(IP Tsoraev)","RLCQ":"Grozny_HUB_EPOD(IP Murtazova)","RLCS":"Mahachkala_HUB_EPOD(IP Ivakina)","RLCT":"Mahachkala_HUB_EPOD(IP Kurbanov)","RLCV":"Tyumen_HUB_EPOD(Delex)","RLCW":"NN_HUB_EPOD(Ruconnect)","RLCX":"NN_HUB_EPOD(Nordex_Delivery)","RLCZ":"Nizhnevartovsk_HUB(IP Elgin)_EPOD","RLDB":"Ryazan_HUB_EPOD(TransKapital)","RLDD":"Samara_HUB_EPOD(Pleks-s)","RLDE":"Orenburg_HUB_EPOD(Pleks-s)","RLDG":"Penza_HUB_EPOD(Pleks-s)","RLDH":"Volgograd_HUB_EPOD(IP Boronin)","RLDJ":"Yaroslavl_HUB_EPOD(Cherepaha)","RLDL":"Novorossiysk_HUB_EPOD(IP_Omerov)","RLDP":"Voronezh_HUB_EPOD(Alenka)","RLDR":"Petrozavodsk_HUB_EPOD(Kareks)","RLDS":"Rostov_HUB_EPOD(Ruconnect)","RLDU":"Vologda_HUB(Cherepaha)_EPOD","RLDW":"Novosibirsk_HUB(Express Kinetika)_EPOD","RLDX":"Omsk_HUB(Absolut Express)_EPOD","RLDY":"Krasnoyarsk_HUB(DM-City)_EPOD","RLDZ":"Kemerovo_HUB(FexPlus)_EPOD","RLEA":"MSC_HUB(Tochno_v_srok)_EPOD","RLEB":"SPB_HUB(Tochno_v_srok)_EPOD","RLEC":"Izhevsk_HUB(IP Garipov)_EPOD","RLED":"Kaluga_HUB(Galaktika)_EPOD","RLEG":"Tver_HUB(IP Glazkov)_EPOD","RLEK":"Novosibirsk_HUB(FA)_EPOD","RLEL":"Tomsk_HUB(FA)_EPOD","RLEM":"Barnaul_HUB(Absolut Express)_EPOD","RLEN":"Murmansk_HUB(Sinergiya)_EPOD","RLEP":"Kaliningrad_HUB(Sinergiya)_EPOD","RLEQ":"Arkhangelsk_HUB(Sinergiya)_EPOD","RLER":"Sochi_HUB(IP_Omerov)_EPOD","RLES":"Irkutsk_HUB(IP_Kazanchikov)_EPOD","RLEU":"MSC_HUB(Sinergiya)_EPOD","RLEW":"SPB_HUB(Armada)_EPOD","RLEY":"MSC_HUB(Armada)_EPOD","RLFA":"Surgut_HUB(Karablina)_EPOD","RLFB":"MSC_HUB(Zest)_EPOD","RLFC":"Lipetsk_HUB(EuroBussines)_EPOD","RLFE":"Vladivostok_HUB(DvaKolesa)_EPOD","RLFF":"Penza_HUB(IP Khalikova)_EPOD","RLFG":"Kursk_HUB(FPS)_EPOD","RLFH":"Vladivostok_HUB(Grantbox)_EPOD","RLFR":"Novosibirsk_HUB(RuConnect)_EPOD","RLFJ":"Novokuzneck_HUB(FexPlus)_EPOD","RLFK":"Tolyatti_HUB(IP Zvezdova)_EPOD","RLFL":"Tver_HUB(DvaKolesa)_EPOD","RLFM":"Khabarovsk_HUB(DvaKolesa)_EPOD","RLFS":"Chelyabinsk_HUB(Ruconnect)_EPOD","RLFU":"MSC_HUB(A2 Express)_EPOD","RLFW":"Tomsk_HUB(Pro-Express)_Epod","RLFX":"Barnaul_HUB(EK_Altai)_Epod","RLFY":"Penza_HUB(Volkova)_EPOD","RLFZ":"Krasnodar_HUB(IP_Danilenko)_EPOD","RLHA":"Ulyanovsk_HUB(IP_Bedenko)_EPOD","RLHB":"Yaroslavl_HUB(YaMS)_EPOD","RLHC":"Tver_HUB(EuroBussines)_EPOD","RLHD":"Kostroma_HUB(YaMS)_EPOD","RLHE":"Astrakhan_HUB(IP_Kozin)_EPOD","RLHF":"Chelyabinsk_HUB(IP_Kulikova)_EPOD","RLHH":"Belgorod_HUB(Shulgina)_EPOD","RLHK":"Tver_HUB(KC South-West)_EPOD","RLHM":"Kazan_HUB(FLIPPOST)_EPOD","RLHQ":"Kemerovo_HUB(FexPlus_New)_EPOD","RLHN":"N.Chelny_HUB(FLIPPOST)_EPOD","RLHP":"Novosibirsk_HUB(FexPlus_New)_EPOD","RLHR":"Novokuznetsk_HUB(FexPlus_New)_EPOD","RLHS":"Izhevsk_HUB(IP_Zverchukov)_EPOD","RLHT":"Kaliningrad_HUB(Volkova)_EPOD","RLHU":"Samara_HUB(Volkova)_EPOD","RLHV":"Kaliningrad_HUB(IP_Polev)_EPOD","RLHX":"Tyumen_HUB(IP Elgin)_EPOD","RLHY":"Novokuznetsk_HUB(Absolut Express)_EPOD","RLKK":"Voronezh_HUB(LS_GROUP)_EPOD"
+"RLCK":"Ekaterinburg_HUB_EPOD(NordTransit)","RLFN":"Blagoveschensk_HUB(Sinergiya)_EPOD","RLHW":"Khabarovsk_HUB(Amur)_EPOD","RLHZ":"Vladivostok_HUB(Amur)_EPOD","RLKN":"Blagoveschensk_HUB(IP_Zhdankin)_EPOD","RLAG":"Chelyabinsk_HUB Epod(Bizon)","RLAH":"Сhelyabinsk_HUB Epod(Express74)","RLAI":"Ufa_HUB Epod(Vipmail)","RLAK":"Saransk_HUB Epod(IP Khalikova)","RLAL":"Samara_HUB Epod(Ks-Express)","RLAM":"Ulyanovsk_HUB Epod(SimService)","RLAQ":"Vladimir_HUB Epod(Alenka)","RLAR":"Ivanovo_HUB Epod(Сherepaha)","RLAS":"Tula_HUB Epod(IP Frolin)","RLAV":"Kaluga_HUB_Epod(Vestovoy)","RLAW":"Orel_HUB_Epod(FPS)","RLAX":"Smolensk_HUB_Epod(FPS)","RLAY":"Saratov_HUB_Epod(Alpha-Express)","RLBA":"Volgograd_HUB_Epod(FlyExpress)","RLBB":"Tambov_HUB_EPOD(Courier)","RLBE":"Ekaterinburg_HUB_EPOD(Ruconnect)","RLBG":"Saratov_HUB_EPOD(EMEX)","RLBQ":"Belgorod_HUB_Epod(EuroBussines)","RLBS":"Astrahan_HUB_Epod(Index)","RLCD":"Kazan_HUB_Epod(IP Petrov)","RLCE":"N.Chelny_HUB_Epod(IP Petrov)","RLCF":"Al'met'evsk_HUB_Epod(IP Petrov)","RLCG":"Krasnodar_HUB_Epod(NDS)","RLCH":"N.Chelny_HUB_Epod(RTK)_new","RLCJ":"Kazan_HUB_Epod(RTK)_new","RLCL":"Kurgan_HUB_EPOD(IP Sukhanov)","RLCM":"Nalchik_HUB_EPOD(KBR)","RLCN":"Vladikavkaz_HUB_EPOD(IP Tsoraev)","RLCQ":"Grozny_HUB_EPOD(IP Murtazova)","RLCS":"Mahachkala_HUB_EPOD(IP Ivakina)","RLCT":"Mahachkala_HUB_EPOD(IP Kurbanov)","RLCV":"Tyumen_HUB_EPOD(Delex)","RLCW":"NN_HUB_EPOD(Ruconnect)","RLCX":"NN_HUB_EPOD(Nordex_Delivery)","RLCZ":"Nizhnevartovsk_HUB(IP Elgin)_EPOD","RLDB":"Ryazan_HUB_EPOD(TransKapital)","RLDD":"Samara_HUB_EPOD(Pleks-s)","RLDE":"Orenburg_HUB_EPOD(Pleks-s)","RLDG":"Penza_HUB_EPOD(Pleks-s)","RLDH":"Volgograd_HUB_EPOD(IP Boronin)","RLDJ":"Yaroslavl_HUB_EPOD(Cherepaha)","RLDL":"Novorossiysk_HUB_EPOD(IP_Omerov)","RLDP":"Voronezh_HUB_EPOD(Alenka)","RLDR":"Petrozavodsk_HUB_EPOD(Kareks)","RLDS":"Rostov_HUB_EPOD(Ruconnect)","RLDU":"Vologda_HUB(Cherepaha)_EPOD","RLDW":"Novosibirsk_HUB(Express Kinetika)_EPOD","RLDX":"Omsk_HUB(Absolut Express)_EPOD","RLDY":"Krasnoyarsk_HUB(DM-City)_EPOD","RLDZ":"Kemerovo_HUB(FexPlus)_EPOD","RLEA":"MSC_HUB(Tochno_v_srok)_EPOD","RLEB":"SPB_HUB(Tochno_v_srok)_EPOD","RLEC":"Izhevsk_HUB(IP Garipov)_EPOD","RLED":"Kaluga_HUB(Galaktika)_EPOD","RLEG":"Tver_HUB(IP Glazkov)_EPOD","RLEK":"Novosibirsk_HUB(FA)_EPOD","RLEL":"Tomsk_HUB(FA)_EPOD","RLEM":"Barnaul_HUB(Absolut Express)_EPOD","RLEN":"Murmansk_HUB(Sinergiya)_EPOD","RLEP":"Kaliningrad_HUB(Sinergiya)_EPOD","RLEQ":"Arkhangelsk_HUB(Sinergiya)_EPOD","RLER":"Sochi_HUB(IP_Omerov)_EPOD","RLES":"Irkutsk_HUB(IP_Kazanchikov)_EPOD","RLEU":"MSC_HUB(Sinergiya)_EPOD","RLEW":"SPB_HUB(Armada)_EPOD","RLEY":"MSC_HUB(Armada)_EPOD","RLFA":"Surgut_HUB(Karablina)_EPOD","RLFB":"MSC_HUB(Zest)_EPOD","RLFC":"Lipetsk_HUB(EuroBussines)_EPOD","RLFE":"Vladivostok_HUB(DvaKolesa)_EPOD","RLFF":"Penza_HUB(IP Khalikova)_EPOD","RLFG":"Kursk_HUB(FPS)_EPOD","RLFH":"Vladivostok_HUB(Grantbox)_EPOD","RLFR":"Novosibirsk_HUB(RuConnect)_EPOD","RLFJ":"Novokuzneck_HUB(FexPlus)_EPOD","RLFK":"Tolyatti_HUB(IP Zvezdova)_EPOD","RLFL":"Tver_HUB(DvaKolesa)_EPOD","RLFM":"Khabarovsk_HUB(DvaKolesa)_EPOD","RLFS":"Chelyabinsk_HUB(Ruconnect)_EPOD","RLFU":"MSC_HUB(A2 Express)_EPOD","RLFW":"Tomsk_HUB(Pro-Express)_Epod","RLFX":"Barnaul_HUB(EK_Altai)_Epod","RLFY":"Penza_HUB(Volkova)_EPOD","RLFZ":"Krasnodar_HUB(IP_Danilenko)_EPOD","RLHA":"Ulyanovsk_HUB(IP_Bedenko)_EPOD","RLHB":"Yaroslavl_HUB(YaMS)_EPOD","RLHC":"Tver_HUB(EuroBussines)_EPOD","RLHD":"Kostroma_HUB(YaMS)_EPOD","RLHE":"Astrakhan_HUB(IP_Kozin)_EPOD","RLHF":"Chelyabinsk_HUB(IP_Kulikova)_EPOD","RLHH":"Belgorod_HUB(Shulgina)_EPOD","RLHK":"Tver_HUB(KC South-West)_EPOD","RLHM":"Kazan_HUB(FLIPPOST)_EPOD","RLHQ":"Kemerovo_HUB(FexPlus_New)_EPOD","RLHN":"N.Chelny_HUB(FLIPPOST)_EPOD","RLHP":"Novosibirsk_HUB(FexPlus_New)_EPOD","RLHR":"Novokuznetsk_HUB(FexPlus_New)_EPOD","RLHS":"Izhevsk_HUB(IP_Zverchukov)_EPOD","RLHT":"Kaliningrad_HUB(Volkova)_EPOD","RLHU":"Samara_HUB(Volkova)_EPOD","RLHV":"Kaliningrad_HUB(IP_Polev)_EPOD","RLHX":"Tyumen_HUB(IP Elgin)_EPOD","RLHY":"Novokuznetsk_HUB(Absolut Express)_EPOD","RLKK":"Voronezh_HUB(LS_GROUP)_EPOD"
 };
 /*__HUBMAP_END__*/
-const hubName = p => HUBMAP[p] || '未知 HUB';
 
+/* ── i18n ─────────────────────────────────── */
+const I18N = {
+en:{
+  titleA:"RD → 3PL", titleB:"REROUTE", titleC:"Daily Report",
+  subtitle:"RD_DSP shutdown reroute · daily volume & 3PL flow monitoring",
+  chip_gen:"DATA REFRESH", chip_latest:"LATEST ENTRY",
+  s1:"Cumulative overview", s2:"Rerouted volume by day", s3:"Daily 3PL flow trend",
+  s4:"Initiator breakdown", s5:"Methodology & plan",
+  k_total:"Total rerouted", k_cdek:"→ CDEK", k_x5:"→ X5",
+  k_sc:"Initiated by SC", k_hub:"Initiated by HUB", k_rev:"Reverse → forward",
+  e_total:"TOTAL REROUTED", e_cdek:"TO CDEK", e_x5:"TO X5", e_sc:"BY SC", e_hub:"BY HUB", e_rev:"REVERSE",
+  unit:"pcs", done:"Done", pend:"Pending",
+  h_total:function(d,p){return "Done "+d+" · Pending "+p},
+  h_cdek:"door + self-pickup, all", h_x5:"PUDO self-pickup, nearest first",
+  h_sc:"SC stock + pipeline pulls", h_hub:"HUB stock · registered from 10/28",
+  h_rev:"fulfilment fix · tracked separately",
+  th_date:"Date", th_sc:"SC", th_cdek:"of which CDEK", th_x5:"of which X5",
+  th_hub:"HUB", th_rev:"Reverse", th_daytotal:"Day total", th_done:"Done", th_pend:"Pending",
+  th_status:"Status", th_total:"TOTAL", th_empty:"no data",
+  st_empty:"EMPTY", st_done:"DONE", st_proc:"PROCESSING",
+  lg_other:"Other 3PL", lg_unit:"Unit: parcels", chart_empty:"No registered data yet",
+  sc_title:"Initiated by SC", sc_sub:"SC stock + pipeline pulls",
+  sc_th_reg:"Registered", sc_th_share:"Day share", sc_cum:"Cumulative",
+  pf_title:"Order prefix → HUB", pf_sub:"BY ORDER PREFIX · RESCODE NAME", unknown_hub:"unknown HUB",
+  hub_title:"Initiated by HUB", hub_sub:"HUB stock orders",
+  hub_th_conf:"Transfer confirmed",
+  hub_standby:"◇ STANDBY · NOT REGISTERED",
+  hub_desc:"The Report by HUB tab currently holds only a header, no registered rows. The chain “HUB manager submits → Tony executes the reroute → HUB confirms the transfer” will be reflected here automatically once entries appear.",
+  hub_plan:"PLANNED START 10/28 · CAP 500 PER BATCH · HUB STOCK SHOULD GO TO A SINGLE 3PL (LDS CANNOT SORT 3PL ORDERS)",
+  rev_title:"Reverse orders (reverse → forward)", rev_sub:"SEPARATELY TRACKED",
+  rev_standby:"◇ STANDBY · NOT REGISTERED",
+  rev_desc:"No entries in the reverse order tab yet. Reverse orders are handled through the fulfilment correction tool (removeReverseOrder); the responsible HUB manager confirms reroute or return. Counted separately.",
+  n1:["Data source",'DingTalk sheet <a href="https://alidocs.dingtalk.com/i/nodes/gvNG4YZ7Jnxop15OCAkXzlNoW2LD0oRE" target="_blank">reroute to 3PL</a> (three tabs: Report by SC / Report by HUB / reverse order). Background and process in <a href="https://alidocs.dingtalk.com/i/nodes/P7QG4Yx2Jpx4OolYCqOlGZAkJ9dEq3XD" target="_blank">the reroute plan</a>.'],
+  n2:["Methodology",'Aggregated per day on the Date column (MMDD). “Done” = <i>done by Tony</i> marked DONE. “Initiated by SC” covers sorting-centre stock plus pipeline pulls (currently registered and executed by TONY). “Initiated by HUB” = HUB stock orders. “Reverse” = reverse-to-forward, handled by the fulfilment correction tool and tracked separately.'],
+  n3:["Reroute plan",'All three order types go live <b>10/28</b>; cap of <b>500 orders</b> per reroute batch; pipeline orders are pulled and reported twice daily at <b>10:00 / 17:00</b>; from 10/30 every RD order must be rerouted before entering a sorting centre (DME / OVB / VVO).'],
+  n4:["Routing rules",'Self-pickup RD-Locker&amp;PUDO → CDEK-PUDO or X5-PUDO (nearest first). Door delivery RD-to-door → CDEK-to-door (YANDEX not used for now due to war risk at the Moscow Zone A data centre).'],
+  n5:["Refresh",'The board re-reads the source sheet and republishes on a daily schedule; live point volumes are in the <a href="https://fbi.alibaba-inc.com/dashboard/view/page.htm?id=1552366" target="_blank">FBI point report</a>. Lyudmila monitors sorting-centre 3PL volumes and requests extra pick-up vehicles.'],
+  n6:["Prefix ↔ HUB map",'Order-number prefixes are matched to RESCODE NAME (column B) of the <a href="https://alidocs.dingtalk.com/i/nodes/a9E05BDRVQRkezKGC74MKxMlJ63zgkYA" target="_blank">RESCODE Detail</a> sheet by waybill-number rule, identifying the originating HUB.'],
+  foot_src:"SOURCE · DINGTALK SHEET “reroute to 3PL” · NODE gvNG4YZ7Jnxop15OCAkXzlNoW2LD0oRE",
+  foot_gen:function(g){return "GENERATED "+g+" · AUTO-REFRESH DAILY"},
+  docTitle:"RD → 3PL REROUTE · Daily Report"
+},
+zh:{
+  titleA:"RD → 3PL", titleB:"REROUTE", titleC:"日报看板",
+  subtitle:"RD_DSP 关停重路由 · 逐日单量与流向监控",
+  chip_gen:"数据刷新", chip_latest:"最新登记日",
+  s1:"累计总览", s2:"逐日重路由单量", s3:"每日 3PL 流向趋势",
+  s4:"发起方汇总", s5:"口径与计划说明",
+  k_total:"累计重路由总量", k_cdek:"→ CDEK", k_x5:"→ X5",
+  k_sc:"SC 发起累计", k_hub:"HUB 发起累计", k_rev:"逆向转正向累计",
+  e_total:"TOTAL REROUTED", e_cdek:"TO CDEK", e_x5:"TO X5", e_sc:"BY SC", e_hub:"BY HUB", e_rev:"REVERSE",
+  unit:"单", done:"已完成", pend:"待处理",
+  h_total:function(d,p){return "已完成 "+d+" · 待处理 "+p},
+  h_cdek:"到门+自提全量", h_x5:"自提 PUDO 距离优先",
+  h_sc:"分拨库存+管道捞单", h_hub:"HUB 库存 · 10/28 起登记",
+  h_rev:"履约订正 · 单独统计",
+  th_date:"日期", th_sc:"SC 发起", th_cdek:"其中 CDEK", th_x5:"其中 X5",
+  th_hub:"HUB 发起", th_rev:"逆向", th_daytotal:"当日合计", th_done:"已完成", th_pend:"待处理",
+  th_status:"状态", th_total:"合计", th_empty:"暂无数据",
+  st_empty:"空", st_done:"已完成", st_proc:"处理中",
+  lg_other:"其他 3PL", lg_unit:"单位：单 / parcels", chart_empty:"暂无逐日登记数据",
+  sc_title:"SC 发起情况汇总", sc_sub:"分拨库存 + 管道捞单",
+  sc_th_reg:"登记单量", sc_th_share:"占当日比", sc_cum:"累计",
+  pf_title:"订单前缀 → HUB 分布", pf_sub:"BY ORDER PREFIX · RESCODE NAME", unknown_hub:"未知 HUB",
+  hub_title:"HUB 发起情况汇总", hub_sub:"HUB 库存订单",
+  hub_th_conf:"转运已确认",
+  hub_standby:"◇ STANDBY · 待登记",
+  hub_desc:"Report by HUB Sheet 目前仅有表头、暂无登记行。HUB manager 提交 → Tony 执行重路由 → HUB 回告转运的链路数据将在登记后自动纳入本看板。",
+  hub_plan:"计划启动 10/28 · 单次限额 500 单 · 建议 HUB 库存统一重路由至同一 3PL（LDS 不具备 3PL 分拣能力）",
+  rev_title:"逆向订单（逆向转正向）汇总", rev_sub:"单独统计",
+  rev_standby:"◇ STANDBY · 待登记",
+  rev_desc:"reverse order Sheet 暂无登记。发现逆向订单后经履约订正工具（removeReverseOrder）处理，由对应 HUB manager 确认重路由或逆向退回，单独统计。",
+  n1:["数据来源",'钉钉表格 <a href="https://alidocs.dingtalk.com/i/nodes/gvNG4YZ7Jnxop15OCAkXzlNoW2LD0oRE" target="_blank">reroute to 3PL</a>（Report by SC / Report by HUB / reverse order 三个 Sheet），背景与流程见 <a href="https://alidocs.dingtalk.com/i/nodes/P7QG4Yx2Jpx4OolYCqOlGZAkJ9dEq3XD" target="_blank">重路由计划</a>。'],
+  n2:["统计口径",'按 Sheet 中 Date 列（MMDD）逐日聚合；「已重路由」= done by Tony 列为 DONE；「SC 发起」含分拨内库存 + 管道内捞单（现 Sheet 中由 TONY 统一登记执行）；「HUB 发起」= HUB 内库存订单；「逆向」= 逆向转正向（履约订正工具处理，单独统计）。'],
+  n3:["重路由计划",'三类订单自 <b>10/28</b> 起正式执行，单次重路由限额 <b>500 单</b>；管道内订单每日 <b>10:00 / 17:00</b> 各捞单上报一次；10/30 后所有 RD 订单须在进入分拨（DME / OVB / VVO）前完成重路由。'],
+  n4:["流向规则",'自提单 RD-Locker&amp;PUDO → CDEK-PUDO 或 X5-PUDO（距离优先）；到门单 RD-to-door → CDEK-to-door（YANDEX 因莫斯科可用区A战争风险暂不启用）。'],
+  n5:["看板更新",'每日定时重读源表并重新发布；点位实时单量另见 <a href="https://fbi.alibaba-inc.com/dashboard/view/page.htm?id=1552366" target="_blank">FBI 点位报表</a>。3PL 提货车辆由 Lyudmila 定时观测分拨 3PL 单量后通知增派。'],
+  n6:["前缀↔HUB 映射",'订单号前缀按运单号规则关联 <a href="https://alidocs.dingtalk.com/i/nodes/a9E05BDRVQRkezKGC74MKxMlJ63zgkYA" target="_blank">RESCODE Detail 表</a> 的 RESCODE NAME（B 列），用于识别订单来源 HUB。'],
+  foot_src:"数据源 · 钉钉表格 “reroute to 3PL” · NODE gvNG4YZ7Jnxop15OCAkXzlNoW2LD0oRE",
+  foot_gen:function(g){return "生成于 "+g+" · 每日自动刷新"},
+  docTitle:"RD → 3PL 重路由日报看板"
+},
+ru:{
+  titleA:"RD → 3PL", titleB:"REROUTE", titleC:"Ежедневный отчёт",
+  subtitle:"Перенаправление в связи с закрытием RD_DSP · ежедневный объём и потоки 3PL",
+  chip_gen:"ДАННЫЕ ОБНОВЛЕНЫ", chip_latest:"ПОСЛЕДНЯЯ ДАТА",
+  s1:"Итоги накопленным", s2:"Объём перенаправлений по дням", s3:"Дневная динамика по 3PL",
+  s4:"Разбивка по инициаторам", s5:"Методология и план",
+  k_total:"Всего перенаправлено", k_cdek:"→ CDEK", k_x5:"→ X5",
+  k_sc:"Инициировано SC", k_hub:"Инициировано HUB", k_rev:"Реверс → прямое",
+  e_total:"TOTAL REROUTED", e_cdek:"TO CDEK", e_x5:"TO X5", e_sc:"BY SC", e_hub:"BY HUB", e_rev:"REVERSE",
+  unit:"ед.", done:"Готово", pend:"В работе",
+  h_total:function(d,p){return "Готово "+d+" · В работе "+p},
+  h_cdek:"до двери + самовывоз, всё", h_x5:"PUDO самовывоз, ближайший",
+  h_sc:"склад SC + выборка из потока", h_hub:"склад HUB · с 28.10",
+  h_rev:"коррекция исполнения · отдельно",
+  th_date:"Дата", th_sc:"SC", th_cdek:"из них CDEK", th_x5:"из них X5",
+  th_hub:"HUB", th_rev:"Реверс", th_daytotal:"Итого за день", th_done:"Готово", th_pend:"В работе",
+  th_status:"Статус", th_total:"ИТОГО", th_empty:"нет данных",
+  st_empty:"ПУСТО", st_done:"ГОТОВО", st_proc:"В РАБОТЕ",
+  lg_other:"Другие 3PL", lg_unit:"Ед.: посылки", chart_empty:"Зарегистрированных данных пока нет",
+  sc_title:"Инициировано SC", sc_sub:"склад SC + выборка из потока",
+  sc_th_reg:"Зарегистрировано", sc_th_share:"Доля за день", sc_cum:"Всего",
+  pf_title:"Префикс заказа → HUB", pf_sub:"BY ORDER PREFIX · RESCODE NAME", unknown_hub:"неизвестный HUB",
+  hub_title:"Инициировано HUB", hub_sub:"заказы на складе HUB",
+  hub_th_conf:"Передача подтверждена",
+  hub_standby:"◇ ОЖИДАНИЕ · НЕТ ЗАПИСЕЙ",
+  hub_desc:"Лист Report by HUB пока содержит только заголовок, записей нет. Цепочка «HUB manager подаёт → Tony выполняет перенаправление → HUB подтверждает передачу» отобразится здесь автоматически после появления записей.",
+  hub_plan:"ЗАПУСК 28.10 · ЛИМИТ 500 ЗА БАТЧ · СКЛАД HUB РЕКОМЕНДУЕТСЯ НАПРАВЛЯТЬ ОДНОМУ 3PL (LDS НЕ СОРТИРУЕТ ЗАКАЗЫ 3PL)",
+  rev_title:"Обратные заказы (реверс → прямое)", rev_sub:"УЧИТЫВАЕТСЯ ОТДЕЛЬНО",
+  rev_standby:"◇ ОЖИДАНИЕ · НЕТ ЗАПИСЕЙ",
+  rev_desc:"Записей на листе reverse order пока нет. Обратные заказы обрабатываются инструментом корректировки исполнения (removeReverseOrder); ответственный HUB manager подтверждает перенаправление или возврат. Учитывается отдельно.",
+  n1:["Источник данных",'Таблица DingTalk <a href="https://alidocs.dingtalk.com/i/nodes/gvNG4YZ7Jnxop15OCAkXzlNoW2LD0oRE" target="_blank">reroute to 3PL</a> (три листа: Report by SC / Report by HUB / reverse order). Контекст и процесс — в <a href="https://alidocs.dingtalk.com/i/nodes/P7QG4Yx2Jpx4OolYCqOlGZAkJ9dEq3XD" target="_blank">плане перенаправления</a>.'],
+  n2:["Методология",'Агрегация по дням согласно столбцу Date (MMDD). «Готово» = DONE в столбце <i>done by Tony</i>. «Инициировано SC» включает склад сортировочного центра и выборку из потока (реестр и исполнение — TONY). «Инициировано HUB» = заказы на складе HUB. «Реверс» = обратное→прямое, обрабатывается инструментом корректировки исполнения и учитывается отдельно.'],
+  n3:["План перенаправления",'Все три типа заказов запускаются <b>28.10</b>; лимит <b>500 посылок</b> за батч; заказы в потоке выбираются и передаются дважды в день в <b>10:00 / 17:00</b>; с 30.10 каждый заказ RD должен быть перенаправлен до попадания в сортировочный центр (DME / OVB / VVO).'],
+  n4:["Маршрутизация",'Постамат/PUDO RD-Locker&amp;PUDO → CDEK-PUDO или X5-PUDO (ближайший приоритет). До двери RD-to-door → CDEK-to-door (YANDEX пока не используется из-за риска по ЦОД «Москва зона A»).'],
+  n5:["Обновление",'Панель ежедневно перечитывает источник и перепубликуется; фактические объёмы по точкам — в <a href="https://fbi.alibaba-inc.com/dashboard/view/page.htm?id=1552366" target="_blank">отчёте FBI</a>. Людмила контролирует объёмы 3PL на сортировочных центрах и запрашивает дополнительный транспорт.'],
+  n6:["Префикс ↔ HUB",'Префиксы номеров заказов сопоставляются с RESCODE NAME (столбец B) листа <a href="https://alidocs.dingtalk.com/i/nodes/a9E05BDRVQRkezKGC74MKxMlJ63zgkYA" target="_blank">RESCODE Detail</a> по правилу номера накладной — это HUB-отправитель.'],
+  foot_src:"ИСТОЧНИК · ТАБЛИЦА DINGTALK “reroute to 3PL” · NODE gvNG4YZ7Jnxop15OCAkXzlNoW2LD0oRE",
+  foot_gen:function(g){return "СФОРМИРОВАНО "+g+" · ОБНОВЛЕНИЕ ЕЖЕДНЕВНО"},
+  docTitle:"RD → 3PL REROUTE · Ежедневный отчёт"
+}
+};
+
+let LANG = 'en';
+try{ const s=localStorage.getItem('reroute_lang'); if(s && I18N[s]) LANG=s; }catch(e){}
+const t = k => { const v = I18N[LANG][k]; return v===undefined ? I18N.en[k] : v; };
+const setLang = l => { LANG=l; try{ localStorage.setItem('reroute_lang',l) }catch(e){}; render(); };
+const hubName = p => HUBMAP[p] || t('unknown_hub');
 const fmt = n => (n==null?0:n).toLocaleString('en-US');
+const num = (n,u) => fmt(n)+' '+(u===false?'':t('unit'));
+
+/* ── derived data ─────────────────────────── */
 const days = (DATA.days||[]).slice().sort((a,b)=>a.date.localeCompare(b.date,undefined,{numeric:true}));
 const sum = k => days.reduce((s,d)=>s+(d[k]?.total||0),0);
 const sum3 = (k,p) => days.reduce((s,d)=>s+(d[k]?.[p]||0),0);
@@ -241,125 +380,152 @@ T.x5   = sum3('sc','x5')+sum3('hub','x5')+sum3('rev','x5');
 T.other= sum3('sc','other')+sum3('hub','other')+sum3('rev','other');
 T.done = ['sc','hub','rev'].reduce((s,k)=>s+days.reduce((a,d)=>a+(d[k]?.done||0),0),0);
 
-/* header chips */
-document.getElementById('gen-time').textContent = DATA.generatedAt;
-document.getElementById('latest-date').textContent = days.length? days[days.length-1].date : '—';
-document.getElementById('foot-gen').textContent = 'GENERATED '+DATA.generatedAt+' · AUTO-REFRESH DAILY';
+function render(){
+  document.documentElement.lang = LANG;
+  document.title = t('docTitle');
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k = el.getAttribute('data-i18n'); const v = t(k);
+    if(typeof v === 'string') el.textContent = v;
+  });
+  document.querySelectorAll('.lang button').forEach(b=>
+    b.setAttribute('aria-pressed', String(b.dataset.lang===LANG)));
 
-/* KPI cards */
-const kpiDefs = [
-  {cls:'total', lab:'累计重路由总量', en:'TOTAL REROUTED', val:T.all, hint:'DONE '+fmt(T.done)+' · 待处理 '+fmt(T.all-T.done)},
-  {cls:'cdek',  lab:'→ CDEK',        en:'TO CDEK',        val:T.cdek, hint:'到门+自提全量'},
-  {cls:'x5',    lab:'→ X5',          en:'TO X5',          val:T.x5,   hint:'自提 PUDO 距离优先'},
-  {cls:'sc',    lab:'SC 发起累计',    en:'BY SC',          val:T.sc,   hint:'分拨库存+管道捞单'},
-  {cls:'hub',   lab:'HUB 发起累计',   en:'BY HUB',         val:T.hub,  hint:'HUB 库存 · 10/28 起登记'},
-  {cls:'rev',   lab:'逆向转正向累计', en:'REVERSE',        val:T.rev,  hint:'履约订正 · 单独统计'}
-];
-document.getElementById('kpis').innerHTML = kpiDefs.map(k=>
-  `<div class="kpi ${k.cls}"><div class="tag"></div>
-   <div class="lab"><span class="zh">${k.lab}</span><span class="en">${k.en}</span></div>
-   <div class="val">${fmt(k.val)}<small>单</small></div>
-   <div class="hint">${k.hint}</div></div>`).join('');
+  document.getElementById('gen-time').textContent = DATA.generatedAt;
+  document.getElementById('latest-date').textContent = days.length ? days[days.length-1].date : '—';
+  document.getElementById('foot-gen').textContent = t('foot_gen')(DATA.generatedAt);
 
-/* day table */
-const head = `<thead><tr>
-  <th>日期 DATE</th><th>SC 发起</th><th>其中 CDEK</th><th>其中 X5</th><th>HUB 发起</th>
-  <th>逆向</th><th>当日合计</th><th>已完成</th><th>待处理</th><th>状态</th></tr></thead>`;
-const rows = days.map(d=>{
-  const tot=(d.sc?.total||0)+(d.hub?.total||0)+(d.rev?.total||0);
-  const done=(d.sc?.done||0)+(d.hub?.done||0)+(d.rev?.done||0);
-  const pend=tot-done;
-  const stat = tot===0 ? '<span class="pill" style="color:var(--txt3)">EMPTY</span>'
-    : pend===0 ? '<span class="pill" style="color:var(--ok)">DONE</span>'
-    : '<span class="pill" style="color:var(--warn)">PROCESSING</span>';
-  const z=v=>v?fmt(v):'<span class="z">0</span>';
-  return `<tr><td class="datecell"><b>${d.date}</b></td>
-    <td>${z(d.sc?.total)}</td><td>${z(d.sc?.cdek)}</td><td>${z(d.sc?.x5)}</td>
-    <td>${z(d.hub?.total)}</td><td>${z(d.rev?.total)}</td>
-    <td><b style="color:#eef7ff">${fmt(tot)}</b></td>
-    <td class="d-ok">${z(done)}</td><td class="${pend?'d-warn':''}">${z(pend)}</td><td>${stat}</td></tr>`;
-}).join('');
-const totalRow = `<tr class="total-row"><td>合计 TOTAL</td>
-  <td>${fmt(T.sc)}</td><td>${fmt(sum3('sc','cdek'))}</td><td>${fmt(sum3('sc','x5'))}</td>
-  <td>${fmt(T.hub)}</td><td>${fmt(T.rev)}</td><td>${fmt(T.all)}</td>
-  <td>${fmt(T.done)}</td><td>${fmt(T.all-T.done)}</td><td></td></tr>`;
-document.getElementById('day-table').innerHTML = head + '<tbody>' + (rows || '<tr><td colspan="10" style="text-align:center;color:var(--txt3)">暂无数据</td></tr>') + totalRow + '</tbody>';
+  /* KPI */
+  const kpiDefs = [
+    {cls:'total', lab:t('k_total'), en:t('e_total'), val:T.all, hint:t('h_total')(fmt(T.done),fmt(T.all-T.done))},
+    {cls:'cdek',  lab:t('k_cdek'),  en:t('e_cdek'),  val:T.cdek, hint:t('h_cdek')},
+    {cls:'x5',    lab:t('k_x5'),    en:t('e_x5'),    val:T.x5,   hint:t('h_x5')},
+    {cls:'sc',    lab:t('k_sc'),    en:t('e_sc'),    val:T.sc,   hint:t('h_sc')},
+    {cls:'hub',   lab:t('k_hub'),   en:t('e_hub'),   val:T.hub,  hint:t('h_hub')},
+    {cls:'rev',   lab:t('k_rev'),   en:t('e_rev'),   val:T.rev,  hint:t('h_rev')}
+  ];
+  document.getElementById('kpis').innerHTML = kpiDefs.map(k=>
+    `<div class="kpi ${k.cls}"><div class="tag"></div>
+     <div class="lab"><span class="zh">${k.lab}</span><span class="mono-tag">${k.en}</span></div>
+     <div class="val">${fmt(k.val)}<small>${t('unit')}</small></div>
+     <div class="hint">${k.hint}</div></div>`).join('');
 
-/* bars */
-if(days.length){
-  const maxV = Math.max(...days.map(d=>(d.sc?.total||0)+(d.hub?.total||0)+(d.rev?.total||0)),1);
-  document.getElementById('bars').innerHTML = days.map(d=>{
+  /* day table */
+  const head = `<thead><tr>
+    <th>${t('th_date')}</th><th>${t('th_sc')}</th><th>${t('th_cdek')}</th><th>${t('th_x5')}</th>
+    <th>${t('th_hub')}</th><th>${t('th_rev')}</th><th>${t('th_daytotal')}</th>
+    <th>${t('th_done')}</th><th>${t('th_pend')}</th><th>${t('th_status')}</th></tr></thead>`;
+  const rows = days.map(d=>{
     const tot=(d.sc?.total||0)+(d.hub?.total||0)+(d.rev?.total||0);
-    const h = Math.max(4, tot/maxV*100);
-    const parts=[['cdek',(d.sc?.cdek||0)+(d.hub?.cdek||0)],['x5',(d.sc?.x5||0)+(d.hub?.x5||0)],['other',(d.sc?.other||0)+(d.hub?.other||0)]];
-    const segs=parts.filter(p=>p[1]>0).map(p=>`<div class="bseg ${p[0]}" style="height:${p[1]/Math.max(tot,1)*100}%"></div>`).join('');
-    return `<div class="bcol"><div class="btop">${fmt(tot)}</div>
-      <div class="bwrap" style="height:${h}%">${segs||'<div class="bseg cdek" style="height:0%"></div>'}</div>
-      <div class="blab">${d.date}</div></div>`;
+    const done=(d.sc?.done||0)+(d.hub?.done||0)+(d.rev?.done||0);
+    const pend=tot-done;
+    const stat = tot===0 ? `<span class="pill" style="color:var(--txt3)">${t('st_empty')}</span>`
+      : pend===0 ? `<span class="pill" style="color:var(--ok)">${t('st_done')}</span>`
+      : `<span class="pill" style="color:var(--warn)">${t('st_proc')}</span>`;
+    const z=v=>v?fmt(v):'<span class="z">0</span>';
+    return `<tr><td class="datecell"><b>${d.date}</b></td>
+      <td>${z(d.sc?.total)}</td><td>${z(d.sc?.cdek)}</td><td>${z(d.sc?.x5)}</td>
+      <td>${z(d.hub?.total)}</td><td>${z(d.rev?.total)}</td>
+      <td><b style="color:#eef7ff">${fmt(tot)}</b></td>
+      <td class="d-ok">${z(done)}</td><td class="${pend?'d-warn':''}">${z(pend)}</td><td>${stat}</td></tr>`;
   }).join('');
-} else {
-  document.querySelector('.chart-body').style.display='none';
-  document.getElementById('bars-empty').style.display='block';
+  const totalRow = `<tr class="total-row"><td>${t('th_total')}</td>
+    <td>${fmt(T.sc)}</td><td>${fmt(sum3('sc','cdek'))}</td><td>${fmt(sum3('sc','x5'))}</td>
+    <td>${fmt(T.hub)}</td><td>${fmt(T.rev)}</td><td>${fmt(T.all)}</td>
+    <td>${fmt(T.done)}</td><td>${fmt(T.all-T.done)}</td><td></td></tr>`;
+  document.getElementById('day-table').innerHTML = head + '<tbody>'
+    + (rows || `<tr><td colspan="10" style="text-align:center;color:var(--txt3)">${t('th_empty')}</td></tr>`)
+    + totalRow + '</tbody>';
+
+  /* bars */
+  if(days.length){
+    document.getElementById('chart-body').style.display='';
+    document.getElementById('bars-empty').style.display='none';
+    const maxV = Math.max(...days.map(d=>(d.sc?.total||0)+(d.hub?.total||0)+(d.rev?.total||0)),1);
+    document.getElementById('bars').innerHTML = days.map(d=>{
+      const tot=(d.sc?.total||0)+(d.hub?.total||0)+(d.rev?.total||0);
+      const h = Math.max(4, tot/maxV*100);
+      const parts=[['cdek',(d.sc?.cdek||0)+(d.hub?.cdek||0)],['x5',(d.sc?.x5||0)+(d.hub?.x5||0)],['other',(d.sc?.other||0)+(d.hub?.other||0)]];
+      const segs=parts.filter(p=>p[1]>0).map(p=>`<div class="bseg ${p[0]}" style="height:${p[1]/Math.max(tot,1)*100}%"></div>`).join('');
+      return `<div class="bcol"><div class="btop">${fmt(tot)}</div>
+        <div class="bwrap" style="height:${h}%">${segs}</div>
+        <div class="blab">${d.date}</div></div>`;
+    }).join('');
+  } else {
+    document.getElementById('chart-body').style.display='none';
+    document.getElementById('bars-empty').style.display='block';
+  }
+
+  /* SC panel */
+  (()=>{
+    const p=document.getElementById('sc-panel');
+    const hd=`<div class="mini-h">${t('sc_title')}<span class="mono-tag">${t('sc_sub')}</span></div>`;
+    if(!T.sc){ p.innerHTML=hd+`<div class="empty-state"><div class="ico">▮ NO DATA</div><p>${t('chart_empty')}</p></div>`; return; }
+    let o = hd+`<table style="margin-top:8px"><thead><tr><th>${t('th_date')}</th><th>${t('sc_th_reg')}</th>
+      <th>${t('th_done')}</th><th>${t('th_pend')}</th><th>${t('sc_th_share')}</th></tr></thead><tbody>`;
+    days.forEach(d=>{
+      const tot=(d.sc?.total||0); if(!tot) return;
+      const dayAll=tot+(d.hub?.total||0)+(d.rev?.total||0);
+      o+=`<tr><td>${d.date}</td><td>${fmt(tot)}</td><td class="d-ok">${fmt(d.sc.done||0)}</td>
+          <td class="${(tot-(d.sc.done||0))?'d-warn':''}">${fmt(tot-(d.sc.done||0))}</td>
+          <td>${dayAll?Math.round(tot/dayAll*100):0}%</td></tr>`;
+    });
+    const scDone=days.reduce((s,d)=>s+(d.sc?.done||0),0);
+    o+=`<tr class="total-row"><td>${t('sc_cum')}</td><td>${fmt(T.sc)}</td><td>${fmt(scDone)}</td><td>${fmt(T.sc-scDone)}</td><td>—</td></tr></tbody></table>`;
+    const O={}; days.forEach(d=>Object.entries(d.sc?.origin||{}).forEach(([k,v])=>O[k]=(O[k]||0)+v));
+    const keys=Object.keys(O).sort((a,b)=>O[b]-O[a]);
+    if(keys.length){
+      const pal=['#37c8f0','#3ddc97','#f5b942','#b57bf0','#5c8db8','#f0687e','#7de3c8'];
+      o+=`<div class="mini-h" style="padding-top:16px">${t('pf_title')}<span class="mono-tag">${t('pf_sub')}</span></div><div class="prefix-bar">`
+        + keys.map((k,i)=>`<i style="width:${O[k]/T.sc*100}%;background:${pal[i%pal.length]}" title="${k} · ${hubName(k)}"></i>`).join('')
+        + '</div><div class="prefix-legend prefix-legend--hub">'
+        + keys.map((k,i)=>`<div class="pl-row"><span class="pl-key"><i style="background:${pal[i%pal.length]}"></i><b>${k}</b></span>`
+          + `<span class="pl-hub">${hubName(k)}</span><span class="pl-num">${num(O[k])} · ${(O[k]/T.sc*100).toFixed(1)}%</span></div>`).join('')
+        + '</div>';
+    }
+    p.innerHTML=o;
+  })();
+
+  /* HUB panel */
+  (()=>{
+    const p=document.getElementById('hub-panel');
+    const hd=`<div class="mini-h">${t('hub_title')}<span class="mono-tag">${t('hub_sub')}</span></div>`;
+    if(!T.hub){
+      p.innerHTML=hd+`<div class="empty-state"><div class="ico">${t('hub_standby')}</div>
+        <p>${t('hub_desc')}</p><div class="plan">${t('hub_plan')}</div></div>`;
+      return;
+    }
+    let o=hd+`<table style="margin-top:8px"><thead><tr><th>${t('th_date')}</th><th>${t('sc_th_reg')}</th>
+      <th>CDEK</th><th>X5</th><th>${t('th_done')}</th><th>${t('hub_th_conf')}</th></tr></thead><tbody>`;
+    days.forEach(d=>{ if(!d.hub?.total) return;
+      o+=`<tr><td>${d.date}</td><td>${fmt(d.hub.total)}</td><td>${fmt(d.hub.cdek)}</td><td>${fmt(d.hub.x5)}</td>
+        <td class="d-ok">${fmt(d.hub.done)}</td><td>${fmt(d.hub.confirmed)}</td></tr>`;});
+    p.innerHTML=o+'</tbody></table>';
+  })();
+
+  /* reverse panel */
+  (()=>{
+    const p=document.getElementById('rev-panel');
+    const hd=`<div class="mini-h">${t('rev_title')}<span class="mono-tag">${t('rev_sub')}</span></div>`;
+    if(!T.rev){
+      p.innerHTML=hd+`<div class="empty-state" style="padding-bottom:20px"><div class="ico">${t('rev_standby')}</div><p>${t('rev_desc')}</p></div>`;
+      return;
+    }
+    let o=hd+`<table style="margin-top:8px"><thead><tr><th>${t('th_date')}</th><th>${t('sc_th_reg')}</th>
+      <th>${t('th_done')}</th><th>${t('th_pend')}</th></tr></thead><tbody>`;
+    days.forEach(d=>{ if(!d.rev?.total) return;
+      o+=`<tr><td>${d.date}</td><td>${fmt(d.rev.total)}</td><td class="d-ok">${fmt(d.rev.done)}</td><td>${fmt(d.rev.pending)}</td></tr>`;});
+    p.innerHTML=o+'</tbody></table>';
+  })();
+
+  /* notes */
+  const sep = LANG==='zh' ? '：' : ': ';
+  document.getElementById('notes').innerHTML = ['n1','n2','n3','n4','n5','n6']
+    .map(k=>{ const [lead,body]=t(k); return `<li><b>${lead}</b>${sep}${body}</li>` }).join('');
 }
 
-/* SC panel */
-(()=>{
-  const p=document.getElementById('sc-panel');
-  if(!T.sc){ p.innerHTML='<div class="mini-h">SC 发起情况汇总<span class="en">INITIATED BY SORTING CENTER</span></div><div class="empty-state"><div class="ico">▮ NO DATA</div><p>SC Sheet 暂无登记行。</p></div>'; return; }
-  let o = `<div class="mini-h">SC 发起情况汇总<span class="en">INITIATED BY SC · 分拨库存 + 管道捞单</span></div>
-    <table style="margin-top:8px"><thead><tr><th>日期</th><th>登记单量</th><th>已完成</th><th>待处理</th><th>占当日比</th></tr></thead><tbody>`;
-  days.forEach(d=>{
-    const tot=(d.sc?.total||0); if(!tot) return;
-    const dayAll=tot+(d.hub?.total||0)+(d.rev?.total||0);
-    o+=`<tr><td>${d.date}</td><td>${fmt(tot)}</td><td class="d-ok">${fmt(d.sc.done||0)}</td>
-        <td class="${(tot-(d.sc.done||0))?'d-warn':''}">${fmt(tot-(d.sc.done||0))}</td>
-        <td>${dayAll?Math.round(tot/dayAll*100):0}%</td></tr>`;
-  });
-  o+=`<tr class="total-row"><td>累计</td><td>${fmt(T.sc)}</td><td>${fmt(days.reduce((s,d)=>s+(d.sc?.done||0),0))}</td><td>${fmt(T.sc-days.reduce((s,d)=>s+(d.sc?.done||0),0))}</td><td>—</td></tr></tbody></table>`;
-  /* origin prefix bar */
-  const O={}; days.forEach(d=>Object.entries(d.sc?.origin||{}).forEach(([k,v])=>O[k]=(O[k]||0)+v));
-  const keys=Object.keys(O).sort((a,b)=>O[b]-O[a]);
-  if(keys.length){
-    const pal=['#37c8f0','#3ddc97','#f5b942','#b57bf0','#5c8db8','#f0687e','#7de3c8'];
-    o+='<div class="mini-h" style="padding-top:16px">订单前缀 → HUB 分布<span class="en">BY ORDER PREFIX · RESCODE NAME</span></div><div class="prefix-bar">'
-      + keys.map((k,i)=>`<i style="width:${O[k]/T.sc*100}%;background:${pal[i%pal.length]}" title="${k} · ${hubName(k)}"></i>`).join('')
-      + '</div><div class="prefix-legend prefix-legend--hub">'
-      + keys.map((k,i)=>`<div class="pl-row"><span class="pl-key"><i style="background:${pal[i%pal.length]}"></i><b>${k}</b></span><span class="pl-hub">${hubName(k)}</span><span class="pl-num">${fmt(O[k])} 单 · ${(O[k]/T.sc*100).toFixed(1)}%</span></div>`).join('')
-      + '</div>';
-  }
-  p.innerHTML=o;
-})();
-
-/* HUB panel */
-(()=>{
-  const p=document.getElementById('hub-panel');
-  const head2='<div class="mini-h">HUB 发起情况汇总<span class="en">INITIATED BY HUB · HUB 库存订单</span></div>';
-  if(!T.hub){
-    p.innerHTML=head2+`<div class="empty-state"><div class="ico">◇ STANDBY · 待登记</div>
-    <p>Report by HUB Sheet 目前仅有表头、暂无登记行。HUB manager 提交 → Tony 执行重路由 → HUB 回告转运的链路数据将在登记后自动纳入本看板。</p>
-    <div class="plan">PLANNED START 10/28 · 单次限额 500 单 · 建议 HUB 库存统一重路由至同一 3PL（LDS 不具备 3PL 分拣能力）</div></div>`;
-    return;
-  }
-  let o=head2+`<table style="margin-top:8px"><thead><tr><th>日期</th><th>登记单量</th><th>CDEK</th><th>X5</th><th>已完成</th><th>转运已确认</th></tr></thead><tbody>`;
-  days.forEach(d=>{ if(!d.hub?.total) return;
-    o+=`<tr><td>${d.date}</td><td>${fmt(d.hub.total)}</td><td>${fmt(d.hub.cdek)}</td><td>${fmt(d.hub.x5)}</td><td class="d-ok">${fmt(d.hub.done)}</td><td>${fmt(d.hub.confirmed)}</td></tr>`;});
-  o+='</tbody></table>';
-  p.innerHTML=o;
-})();
-
-/* reverse panel */
-(()=>{
-  const p=document.getElementById('rev-panel');
-  const head3='<div class="mini-h">逆向订单（逆向转正向）汇总<span class="en">REVERSE ORDERS · SEPARATELY TRACKED</span></div>';
-  if(!T.rev){
-    p.innerHTML=head3+`<div class="empty-state" style="padding-bottom:20px"><div class="ico">◇ STANDBY · 待登记</div>
-    <p>reverse order Sheet 暂无登记。发现逆向订单后经履约订正工具（removeReverseOrder）处理，由对应 HUB manager 确认重路由或逆向退回，单独统计。</p></div>`;
-    return;
-  }
-  let o=head3+'<table style="margin-top:8px"><thead><tr><th>日期</th><th>单量</th><th>已完成</th><th>待处理</th></tr></thead><tbody>';
-  days.forEach(d=>{ if(!d.rev?.total) return; o+=`<tr><td>${d.date}</td><td>${fmt(d.rev.total)}</td><td class="d-ok">${fmt(d.rev.done)}</td><td>${fmt(d.rev.pending)}</td></tr>`;});
-  p.innerHTML=o+'</tbody></table>';
-})();
+document.querySelectorAll('.lang button').forEach(b=>
+  b.addEventListener('click',()=>setLang(b.dataset.lang)));
+render();
 </script>
 </body>
 </html>
