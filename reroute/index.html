@@ -106,6 +106,15 @@
   .prefix-legend{display:flex;flex-wrap:wrap;gap:6px 16px;padding:2px 16px 14px;font-size:12px;color:var(--txt2)}
   .prefix-legend b{font-family:var(--mono);color:#dcebf6;font-weight:600;margin-right:4px}
   .prefix-legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:0}
+  .prefix-legend--hub{display:block;padding:2px 16px 14px;gap:0}
+  .pl-row{display:grid;grid-template-columns:78px 1fr auto;gap:10px;align-items:baseline;
+    padding:5px 0;border-bottom:1px dashed var(--line);font-size:12.5px}
+  .pl-row:last-child{border-bottom:0}
+  .pl-key b{font-family:var(--mono);color:#eaf4fc;font-weight:600;letter-spacing:.04em}
+  .pl-hub{color:var(--txt);font-family:var(--mono);font-size:12px;letter-spacing:.01em;word-break:break-word}
+  .pl-hub.none{color:var(--txt3);font-style:italic}
+  .pl-num{color:var(--txt2);font-family:var(--mono);font-size:12px;white-space:nowrap}
+  @media(max-width:520px){.pl-row{grid-template-columns:66px 1fr;gap:6px 8px}.pl-num{grid-column:2;text-align:right}}
   .empty-state{padding:26px 18px 24px;text-align:center}
   .empty-state .ico{font-family:var(--mono);color:var(--warn);letter-spacing:.22em;font-size:11px;margin-bottom:8px}
   .empty-state p{font-size:13px;color:var(--txt2);max-width:520px;margin:0 auto}
@@ -198,6 +207,7 @@
     <li><b>重路由计划</b>：三类订单自 <b>10/28</b> 起正式执行，单次重路由限额 <b>500 单</b>；管道内订单每日 <b>10:00 / 17:00</b> 各捞单上报一次；10/30 后所有 RD 订单须在进入分拨（DME / OVB / VVO）前完成重路由。</li>
     <li><b>流向规则</b>：自提单 RD-Locker&PUDO → CDEK-PUDO 或 X5-PUDO（距离优先）；到门单 RD-to-door → CDEK-to-door（YANDEX 因莫斯科可用区A战争风险暂不启用）。</li>
     <li><b>看板更新</b>：每日定时重读源表并重新发布；点位实时单量另见 <a href="https://fbi.alibaba-inc.com/dashboard/view/page.htm?id=1552366" target="_blank">FBI 点位报表</a>。3PL 提货车辆由 Lyudmila 定时观测分拨 3PL 单量后通知增派。</li>
+    <li><b>前缀↔HUB 映射</b>：订单号前缀按运单号规则关联 <a href="https://alidocs.dingtalk.com/i/nodes/a9E05BDRVQRkezKGC74MKxMlJ63zgkYA" target="_blank">RESCODE Detail 表</a> 的 RESCODE NAME（B 列），用于识别订单来源 HUB。</li>
   </ul>
 </section>
 
@@ -209,17 +219,16 @@
 
 <script>
 /*__DATA_START__*/
-const DATA = {
-  "generatedAt": "2026-10-16 15:52 CST",
-  "days": [
-    { "date":"10/13",
-      "sc":  { "total":907, "cdek":906, "x5":1, "other":0, "done":907, "pending":0,
-               "origin": { "RLHZ":437, "RLCK":238, "RLHW":173, "RLKN":58, "RLFN":1 } },
-      "hub": { "total":0, "cdek":0, "x5":0, "other":0, "done":0, "pending":0, "confirmed":0 },
-      "rev": { "total":0, "done":0, "pending":0 } }
-  ]
-};
+const DATA = {"generatedAt":"2026-10-16 16:58 CST","days":[{"date":"10/13","sc":{"total":907,"cdek":906,"x5":1,"other":0,"done":907,"pending":0,"origin":{"RLKN":58,"RLCK":238,"RLHW":173,"RLFN":1,"RLHZ":437}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}}]};
 /*__DATA_END__*/
+
+/* 订单前缀 → HUB 名称映射（源：钉钉表格 RESCODE Detail 列B RESCODE NAME，waybill 前缀匹配） */
+/*__HUBMAP_START__*/
+const HUBMAP = {
+"RLCK":"Ekaterinburg_HUB_EPOD(NordTransit)","RLFN":"Blagoveschensk_HUB(Sinergiya)_EPOD","RLHW":"Khabarovsk_HUB(Amur)_EPOD","RLHZ":"Vladivostok_HUB(Amur)_EPOD","RLKN":"Blagoveschensk_HUB(IP_Zhdankin)_EPOD","RLAG":"Chelyabinsk_HUB Epod(Bizon)","RLAH":"Сhelyabinsk_HUB Epod(Express74)","RLAI":"Ufa_HUB Epod(Vipmail)","RLAK":"Saransk_HUB Epod(IP Khalikova)","RLAL":"Samara_HUB Epod(Ks-Express)","RLAM":"Ulyanovsk_HUB Epod(SimService)","RLAQ":"Vladimir_HUB Epod(Alenka)","RLAR":"Ivanovo_HUB Epod(Сherepaha)","RLAS":"Tula_HUB Epod(IP Frolin)","RLAV":"Kaluga_HUB_Epod(Vestovoy)","RLAW":"Orel_HUB_Epod(FPS)","RLAX":"Smolensk_HUB_Epod(FPS)","RLAY":"Saratov_HUB_Epod(Alfa-Express)","RLBA":"Volgograd_HUB_Epod(FlyExpress)","RLBB":"Tambov_HUB_EPOD(Courier)","RLBE":"Ekaterinburg_HUB_EPOD(Ruconnect)","RLBG":"Saratov_HUB_EPOD(EMEX)","RLBQ":"Belgorod_HUB_Epod(EuroBussines)","RLBS":"Astrahan_HUB_Epod(Index)","RLCD":"Kazan_HUB_Epod(IP Petrov)","RLCE":"N.Chelny_HUB_Epod(IP Petrov)","RLCF":"Al'met'evsk_HUB_Epod(IP Petrov)","RLCG":"Krasnodar_HUB_Epod(NDS)","RLCH":"N.Chelny_HUB_Epod(RTK)_new","RLCJ":"Kazan_HUB_Epod(RTK)_new","RLCL":"Kurgan_HUB_EPOD(IP Sukhanov)","RLCM":"Nalchik_HUB_EPOD(KBR)","RLCN":"Vladikavkaz_HUB_EPOD(IP Tsoraev)","RLCQ":"Grozny_HUB_EPOD(IP Murtazova)","RLCS":"Mahachkala_HUB_EPOD(IP Ivakina)","RLCT":"Mahachkala_HUB_EPOD(IP Kurbanov)","RLCV":"Tyumen_HUB_EPOD(Delex)","RLCW":"NN_HUB_EPOD(Ruconnect)","RLCX":"NN_HUB_EPOD(Nordex_Delivery)","RLCZ":"Nizhnevartovsk_HUB(IP Elgin)_EPOD","RLDB":"Ryazan_HUB_EPOD(TransKapital)","RLDD":"Samara_HUB_EPOD(Pleks-s)","RLDE":"Orenburg_HUB_EPOD(Pleks-s)","RLDG":"Penza_HUB_EPOD(Pleks-s)","RLDH":"Volgograd_HUB_EPOD(IP Boronin)","RLDJ":"Yaroslavl_HUB_EPOD(Cherepaha)","RLDL":"Novorossiysk_HUB_EPOD(IP_Omerov)","RLDP":"Voronezh_HUB_EPOD(Alenka)","RLDR":"Petrozavodsk_HUB_EPOD(Kareks)","RLDS":"Rostov_HUB_EPOD(Ruconnect)","RLDU":"Vologda_HUB(Cherepaha)_EPOD","RLDW":"Novosibirsk_HUB(Express Kinetika)_EPOD","RLDX":"Omsk_HUB(Absolut Express)_EPOD","RLDY":"Krasnoyarsk_HUB(DM-City)_EPOD","RLDZ":"Kemerovo_HUB(FexPlus)_EPOD","RLEA":"MSC_HUB(Tochno_v_srok)_EPOD","RLEB":"SPB_HUB(Tochno_v_srok)_EPOD","RLEC":"Izhevsk_HUB(IP Garipov)_EPOD","RLED":"Kaluga_HUB(Galaktika)_EPOD","RLEG":"Tver_HUB(IP Glazkov)_EPOD","RLEK":"Novosibirsk_HUB(FA)_EPOD","RLEL":"Tomsk_HUB(FA)_EPOD","RLEM":"Barnaul_HUB(Absolut Express)_EPOD","RLEN":"Murmansk_HUB(Sinergiya)_EPOD","RLEP":"Kaliningrad_HUB(Sinergiya)_EPOD","RLEQ":"Arkhangelsk_HUB(Sinergiya)_EPOD","RLER":"Sochi_HUB(IP_Omerov)_EPOD","RLES":"Irkutsk_HUB(IP_Kazanchikov)_EPOD","RLEU":"MSC_HUB(Sinergiya)_EPOD","RLEW":"SPB_HUB(Armada)_EPOD","RLEY":"MSC_HUB(Armada)_EPOD","RLFA":"Surgut_HUB(Karablina)_EPOD","RLFB":"MSC_HUB(Zest)_EPOD","RLFC":"Lipetsk_HUB(EuroBussines)_EPOD","RLFE":"Vladivostok_HUB(DvaKolesa)_EPOD","RLFF":"Penza_HUB(IP Khalikova)_EPOD","RLFG":"Kursk_HUB(FPS)_EPOD","RLFH":"Vladivostok_HUB(Grantbox)_EPOD","RLFR":"Novosibirsk_HUB(RuConnect)_EPOD","RLFJ":"Novokuzneck_HUB(FexPlus)_EPOD","RLFK":"Tolyatti_HUB(IP Zvezdova)_EPOD","RLFL":"Tver_HUB(DvaKolesa)_EPOD","RLFM":"Khabarovsk_HUB(DvaKolesa)_EPOD","RLFS":"Chelyabinsk_HUB(Ruconnect)_EPOD","RLFU":"MSC_HUB(A2 Express)_EPOD","RLFW":"Tomsk_HUB(Pro-Express)_Epod","RLFX":"Barnaul_HUB(EK_Altai)_Epod","RLFY":"Penza_HUB(Volkova)_EPOD","RLFZ":"Krasnodar_HUB(IP_Danilenko)_EPOD","RLHA":"Ulyanovsk_HUB(IP_Bedenko)_EPOD","RLHB":"Yaroslavl_HUB(YaMS)_EPOD","RLHC":"Tver_HUB(EuroBussines)_EPOD","RLHD":"Kostroma_HUB(YaMS)_EPOD","RLHE":"Astrakhan_HUB(IP_Kozin)_EPOD","RLHF":"Chelyabinsk_HUB(IP_Kulikova)_EPOD","RLHH":"Belgorod_HUB(Shulgina)_EPOD","RLHK":"Tver_HUB(KC South-West)_EPOD","RLHM":"Kazan_HUB(FLIPPOST)_EPOD","RLHQ":"Kemerovo_HUB(FexPlus_New)_EPOD","RLHN":"N.Chelny_HUB(FLIPPOST)_EPOD","RLHP":"Novosibirsk_HUB(FexPlus_New)_EPOD","RLHR":"Novokuznetsk_HUB(FexPlus_New)_EPOD","RLHS":"Izhevsk_HUB(IP_Zverchukov)_EPOD","RLHT":"Kaliningrad_HUB(Volkova)_EPOD","RLHU":"Samara_HUB(Volkova)_EPOD","RLHV":"Kaliningrad_HUB(IP_Polev)_EPOD","RLHX":"Tyumen_HUB(IP Elgin)_EPOD","RLHY":"Novokuznetsk_HUB(Absolut Express)_EPOD","RLKK":"Voronezh_HUB(LS_GROUP)_EPOD"
+};
+/*__HUBMAP_END__*/
+const hubName = p => HUBMAP[p] || '未知 HUB';
 
 const fmt = n => (n==null?0:n).toLocaleString('en-US');
 const days = (DATA.days||[]).slice().sort((a,b)=>a.date.localeCompare(b.date,undefined,{numeric:true}));
@@ -312,10 +321,10 @@ if(days.length){
   const keys=Object.keys(O).sort((a,b)=>O[b]-O[a]);
   if(keys.length){
     const pal=['#37c8f0','#3ddc97','#f5b942','#b57bf0','#5c8db8','#f0687e','#7de3c8'];
-    o+='<div class="mini-h" style="padding-top:16px">订单前缀分布<span class="en">BY ORDER-NUMBER PREFIX</span></div><div class="prefix-bar">'
-      + keys.map((k,i)=>`<i style="width:${O[k]/T.sc*100}%;background:${pal[i%pal.length]}" title="${k}"></i>`).join('')
-      + '</div><div class="prefix-legend">'
-      + keys.map((k,i)=>`<span><i style="background:${pal[i%pal.length]}"></i><b>${k}</b>${fmt(O[k])} 单 · ${(O[k]/T.sc*100).toFixed(1)}%</span>`).join('')
+    o+='<div class="mini-h" style="padding-top:16px">订单前缀 → HUB 分布<span class="en">BY ORDER PREFIX · RESCODE NAME</span></div><div class="prefix-bar">'
+      + keys.map((k,i)=>`<i style="width:${O[k]/T.sc*100}%;background:${pal[i%pal.length]}" title="${k} · ${hubName(k)}"></i>`).join('')
+      + '</div><div class="prefix-legend prefix-legend--hub">'
+      + keys.map((k,i)=>`<div class="pl-row"><span class="pl-key"><i style="background:${pal[i%pal.length]}"></i><b>${k}</b></span><span class="pl-hub">${hubName(k)}</span><span class="pl-num">${fmt(O[k])} 单 · ${(O[k]/T.sc*100).toFixed(1)}%</span></div>`).join('')
       + '</div>';
   }
   p.innerHTML=o;
