@@ -160,6 +160,33 @@
   .pl-row.clickable:hover{background:rgba(55,200,240,.07)}
   .pl-row.clickable .pl-num::after{content:" ›";color:var(--hud)}
 
+  /* ── QC watchlist ─────────────────────── */
+  .qc-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:-2px 0 12px}
+  .chip .dot.red{background:var(--dead);box-shadow:0 0 6px var(--dead)}
+  .qc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+  .qc-card{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--txt3);border-radius:10px;padding:13px 16px 12px;position:relative}
+  .qc-card.p0{border-left-color:var(--dead)}
+  .qc-card.p1{border-left-color:var(--warn)}
+  .qc-badge{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;padding:2px 8px;border-radius:999px;border:1px solid currentColor;margin-bottom:8px}
+  .qc-card.p0 .qc-badge{color:var(--dead);background:rgba(240,104,126,.08)}
+  .qc-card.p1 .qc-badge{color:var(--warn);background:rgba(245,185,66,.08)}
+  .qc-hub{font-size:14px;font-weight:600;color:#eaf4fc;letter-spacing:.01em}
+  .qc-who{font-family:var(--mono);font-size:10.5px;color:var(--txt3);margin-top:2px;letter-spacing:.05em}
+  .qc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .qc-tag{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--txt2);border:1px solid var(--line2);background:var(--panel2);border-radius:6px;padding:3px 8px;white-space:nowrap}
+  .qc-tag b{color:#eef7ff;font-weight:600;margin-left:5px}
+  .qc-tag.hot b{color:var(--dead)} .qc-tag.warm b{color:var(--warn)}
+  .qc-note{font-size:12px;color:var(--txt2);line-height:1.6;margin-top:9px}
+  .qc-clean{padding:12px 16px 14px}
+  .qc-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .qc-pill{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--txt2);border:1px solid var(--line2);border-radius:999px;padding:4px 11px;background:var(--panel2)}
+  .qc-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 5px var(--ok)}
+  .qc-pill.click{cursor:pointer;transition:border-color .15s,color .15s}
+  .qc-pill.click:hover{border-color:var(--hud-dim);color:#cfe4f2}
+  .qc-pill b{color:var(--ok);font-weight:600}
+  .qc-foot{font-size:11px;color:var(--txt3);margin-top:12px;line-height:1.7}
+  .qc-src{color:var(--hud);text-decoration:none;border-bottom:1px dashed var(--hud-dim)}
+
   /* ── detail modal ───────────────────────── */
   #modal{position:fixed;inset:0;z-index:50;display:none}
   #modal.open{display:flex}
@@ -274,7 +301,23 @@
 </section>
 
 <section>
-  <div class="sec-h"><span class="no">05</span><h2 data-i18n="s5"></h2><span class="mono-tag">NOTES &amp; PLAN</span></div>
+  <div class="sec-h"><span class="no">05</span><h2 data-i18n="s6"></h2><span class="mono-tag">QC CROSS-CHECK · ANOMALOUS HUBS</span></div>
+  <div class="panel" style="padding:16px 16px 14px">
+    <div class="qc-meta">
+      <div class="chip"><span class="dot red"></span><span data-i18n="qc_chip"></span> <span id="qc-date">—</span></div>
+      <span style="font-size:12px;color:var(--txt2)" data-i18n="qc_lead"></span>
+    </div>
+    <div class="qc-grid" id="qc-cards"></div>
+    <div class="qc-clean">
+      <div class="mini-h" style="padding:14px 0 0"><span data-i18n="qc_clean_t"></span><span class="mono-tag" data-i18n="qc_clean_sub"></span></div>
+      <div class="qc-strip" id="qc-clean"></div>
+      <div class="qc-foot" id="qc-foot"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-h"><span class="no">06</span><h2 data-i18n="s5"></h2><span class="mono-tag">NOTES &amp; PLAN</span></div>
   <ul class="notes" id="notes"></ul>
 </section>
 
@@ -305,7 +348,7 @@
 
 <script>
 /*__DATA_START__*/
-const DATA = {"generatedAt":"2026-10-20 15:02 CST","days":[{"date":"10/13","sc":{"total":907,"cdek":906,"x5":1,"other":0,"done":907,"pending":0,"origin":{"RLKN":58,"RLCK":238,"RLHW":173,"RLFN":1,"RLHZ":437}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}}]};
+const DATA = {"generatedAt":"2026-10-20 17:30 CST","days":[{"date":"10/13","sc":{"total":907,"cdek":906,"x5":1,"other":0,"done":907,"pending":0,"origin":{"RLKN":58,"RLCK":238,"RLHW":173,"RLFN":1,"RLHZ":437}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}}]};
 /*__DATA_END__*/
 
 /* 订单级明细（刷新脚本注入；sc/hub 行 [单号,3PL,done,登记人(,转运确认)]，rev 行 [单号,done]） */
@@ -320,6 +363,48 @@ const HUBMAP = {
 };
 /*__HUBMAP_END__*/
 
+/* 质控交叉标记（来源：RU COE Quality Daily Report，静态快照，不随每日刷新变动，需人工按期更新） */
+/*__QCX_START__*/
+const QCX = {
+  "date":"2026-10-18",
+  "src":"https://alidocs.dingtalk.com/i/nodes/r1R7q3QmWew5lo02f7nMpBvwJxkXOEP2",
+  "flagged":[
+    {"p":"P0","hub":"SPB HUB(RuConnect)","who":"FN · Papchenkov A",
+     "tags":[{"k":"rer1","v":"28"},{"k":"dpudo","v":"7/10"},{"k":"tail","v":"431 · 1.2%"}],
+     "note":{"zh":"唯一同时登上两张不合理重路由榜的 HUB：1+1 提交 28 单（Top10 第3）；Dark PUDO 榜占 7 席（小件员 Шаршов 27、Алешин А. 23、Алешин Н. 32），周尾单 431 单为全网绝对量最大。属操作纪律问题，建议点名核查这 3 名小件员。",
+             "en":"The only HUB on both unreasonable-reroute lists: 28 one-plus-one reroutes (#3 in Top10); 7 of 10 Dark-PUDO slots (couriers Шаршов 27, Алешин А. 23, Алешин Н. 32); weekly tail orders 431, the largest absolute count network-wide. A discipline issue — review these 3 couriers.",
+             "ru":"Единственный HUB сразу в обоих списках нерациональных перенаправлений: 28 «1+1» (#3 в Top10); 7 из 10 позиций Dark-PUDO (курьеры Шаршов 27, Алешин А. 23, Алешин Н. 32); 431 «хвостовых» за неделю — максимум в сети. Вопрос дисциплины — проверить этих 3 курьеров."}},
+    {"p":"P0","hub":"MSC_HUB2(RuConnect)","who":"FN · Ponomarev",
+     "tags":[{"k":"dpudo","v":"2/10"},{"k":"tail","v":"64 · 0.2%"}],
+     "note":{"zh":"Dark PUDO 榜 2 席（小件员 Чуприков 11+10=21 单不合理），尾单率正常。单点小件员问题，针对性辅导即可。",
+             "en":"2 Dark-PUDO slots (courier Чуприков 11+10=21 unreasonable); tail rate normal. An isolated courier issue — targeted coaching.",
+             "ru":"2 позиции Dark-PUDO (курьер Чуприков 11+10=21 нерациональных); доля «хвостов» в норме. Локальная проблема курьера — точечное обучение."}},
+    {"p":"P1","hub":"Tula_HUB(IP Frolin)","who":"FN · Safonovskaya V",
+     "tags":[{"k":"tail","v":"380 · 19.7%","hot":1},{"k":"daily","v":"10/15 24.7%"}],
+     "note":{"zh":"尚未纳入批量重路由，但持续高尾单：周 380 单 / 19.7%，10/15 单日 193 单 / 24.7%、10/18 88 单 / 24.9%，全网最差持续性。建议优先补入 3PL 提交范围。",
+             "en":"Not yet in the batch reroute but persistently high tail orders: 380 / 19.7% weekly, 193 / 24.7% on 10/15, 88 / 24.9% on 10/18 — worst sustained in the network. Recommend adding to 3PL scope first.",
+             "ru":"Ещё не в пакетном перенаправлении, но стабильно высокий уровень «хвостов»: 380 / 19.7% за неделю, 193 / 24.7% 15.10, 88 / 24.9% 18.10 — худший устойчивый показатель в сети. Рекомендуется первым включить в перенаправление в 3PL."}},
+    {"p":"P1","hub":"Krasnodar_HUB (Index)","who":"LI · Rib V.",
+     "tags":[{"k":"tail","v":"36 · 56.3%","hot":1},{"k":"daily","v":"10/18 36.4%"}],
+     "note":{"zh":"尚未纳入批量重路由，尾单率全网最严重：周 56.3%，单日 30%~100% 波动。需立即介入。",
+             "en":"Not yet in the batch reroute; the most severe tail rate network-wide: 56.3% weekly, swinging 30%–100% daily. Needs immediate intervention.",
+             "ru":"Ещё не в пакетном перенаправлении; самый тяжёлый показатель «хвостов» в сети: 56.3% за неделю, в днях от 30% до 100%. Требуется немедленное вмешательство."}},
+    {"p":"P1","hub":"SPB_HUB(Tochno_v_srok)","who":"FN · Safonovskaya V",
+     "tags":[{"k":"tail","v":"34 · 7.4%","warm":1},{"k":"daily","v":"10/12 29%"}],
+     "note":{"zh":"尚未纳入批量重路由，周尾单 34 单 / 7.4%，10/12 单日 29%。异常明显，建议补入提交范围。",
+             "en":"Not yet in the batch reroute; 34 tail orders / 7.4% weekly, 29% on 10/12. Clear anomaly — recommend adding to scope.",
+             "ru":"Ещё не в пакетном перенаправлении; 34 «хвоста» / 7.4% за неделю, 29% 12.10. Очевидная аномалия — рекомендуется включить в перенаправление."}}
+  ],
+  "clean":[
+    {"hub":"Vladivostok_HUB(Amur)","pref":"RLHZ","n":437},
+    {"hub":"Ekaterinburg_HUB(NordTransit)","pref":"RLCK","n":238},
+    {"hub":"Khabarovsk_HUB(Amur)","pref":"RLHW","n":173},
+    {"hub":"Blagoveschensk_HUB(IP_Zhdankin)","pref":"RLKN","n":58},
+    {"hub":"Blagoveschensk_HUB(Sinergiya)","pref":"RLFN","n":1}
+  ]
+};
+/*__QCX_END__*/
+
 /* ── i18n ─────────────────────────────────── */
 const I18N = {
 en:{
@@ -327,7 +412,12 @@ en:{
   subtitle:"RD_DSP shutdown reroute · daily volume & 3PL flow monitoring",
   chip_gen:"DATA REFRESH", chip_latest:"LATEST ENTRY",
   s1:"Cumulative overview", s2:"Rerouted volume by day", s3:"Daily 3PL flow trend",
-  s4:"Initiator breakdown", s5:"Methodology & plan",
+  s4:"Initiator breakdown", s5:"Methodology & plan", s6:"QC cross-check · anomalous HUBs",
+  qc_chip:"QC SNAPSHOT", qc_lead:"HUBs already submitting reroute batches to 3PL that still show clear anomalies in the quality daily report (unreasonable reroute / tail orders).",
+  qc_clean_t:"Batch-submitted & clean", qc_clean_sub:"NO ANOMALY IN QC REPORT",
+  qc_p0:"ACTION NEEDED", qc_p1:"WATCHLIST",
+  qc_t_rer1:"1+1 reroutes", qc_t_dpudo:"Dark-PUDO list slots", qc_t_tail:"Tail orders · rate", qc_t_daily:"Daily peak",
+  qc_foot:function(d,u){return "Source · RU COE Quality Daily Report ("+d+") <a class=\"qc-src\" href=\""+u+"\" target=\"_blank\">open report</a> · tail-order rate = parcels breaching SLA+5d; unreasonable reroute = locker online with free cells yet rerouted (per Indicator Caliber)."},
   k_total:"Total rerouted", k_cdek:"→ CDEK", k_x5:"→ X5",
   k_sc:"Initiated by SC", k_hub:"Initiated by HUB", k_rev:"Reverse → forward",
   e_total:"TOTAL REROUTED", e_cdek:"TO CDEK", e_x5:"TO X5", e_sc:"BY SC", e_hub:"BY HUB", e_rev:"REVERSE",
@@ -375,7 +465,12 @@ zh:{
   subtitle:"RD_DSP 关停重路由 · 逐日单量与流向监控",
   chip_gen:"数据刷新", chip_latest:"最新登记日",
   s1:"累计总览", s2:"逐日重路由单量", s3:"每日 3PL 流向趋势",
-  s4:"发起方汇总", s5:"口径与计划说明",
+  s4:"发起方汇总", s5:"口径与计划说明", s6:"质控交叉标记 · 异常 HUB",
+  qc_chip:"质控快照", qc_lead:"已向 3PL 批量提交重路由、但质控日报中仍存在明显异常（不合理重路由 / 尾单）的 HUB。",
+  qc_clean_t:"已批量提交 · 无异常", qc_clean_sub:"质控日报未见异常",
+  qc_p0:"需处置", qc_p1:"观察名单",
+  qc_t_rer1:"1+1 重路由", qc_t_dpudo:"Dark PUDO 上榜席", qc_t_tail:"周尾单 · 率", qc_t_daily:"单日峰值",
+  qc_foot:function(d,u){return "来源 · RU COE Quality Daily Report（"+d+"）<a class=\"qc-src\" href=\""+u+"\" target=\"_blank\">打开报表</a> · 尾单率=超出 SLA+5 天口径；不合理重路由=Locker 在线且有可用格口仍改派（见指标口径表）。"},
   k_total:"累计重路由总量", k_cdek:"→ CDEK", k_x5:"→ X5",
   k_sc:"SC 发起累计", k_hub:"HUB 发起累计", k_rev:"逆向转正向累计",
   e_total:"TOTAL REROUTED", e_cdek:"TO CDEK", e_x5:"TO X5", e_sc:"BY SC", e_hub:"BY HUB", e_rev:"REVERSE",
@@ -422,7 +517,12 @@ ru:{
   subtitle:"Перенаправление в связи с закрытием RD_DSP · ежедневный объём и потоки 3PL",
   chip_gen:"ДАННЫЕ ОБНОВЛЕНЫ", chip_latest:"ПОСЛЕДНЯЯ ДАТА",
   s1:"Итоги накопленным", s2:"Объём перенаправлений по дням", s3:"Дневная динамика по 3PL",
-  s4:"Разбивка по инициаторам", s5:"Методология и план",
+  s4:"Разбивка по инициаторам", s5:"Методология и план", s6:"Кросс-проверка QC · аномальные HUB",
+  qc_chip:"СНИМОК QC", qc_lead:"HUB, уже подающие пакеты перенаправлений в 3PL, но с явными аномалиями в ежедневном отчёте качества (нерациональные перенаправления / «хвосты»).",
+  qc_clean_t:"Пакеты поданы · без аномалий", qc_clean_sub:"БЕЗ АНОМАЛИЙ В QC",
+  qc_p0:"ТРЕБУЕТ ДЕЙСТВИЙ", qc_p1:"НА НАБЛЮДЕНИИ",
+  qc_t_rer1:"Перенаправления «1+1»", qc_t_dpudo:"Позиции в списке Dark-PUDO", qc_t_tail:"«Хвосты» за неделю · доля", qc_t_daily:"Пик за день",
+  qc_foot:function(d,u){return "Источник · RU COE Quality Daily Report ("+d+") <a class=\"qc-src\" href=\""+u+"\" target=\"_blank\">открыть отчёт</a> · доля «хвостов» = посылки сверх SLA+5 дн.; нерациональное перенаправление = локер онлайн со свободными ячейками, но переведён (см. Indicator Caliber)."},
   k_total:"Всего перенаправлено", k_cdek:"→ CDEK", k_x5:"→ X5",
   k_sc:"Инициировано SC", k_hub:"Инициировано HUB", k_rev:"Реверс → прямое",
   e_total:"TOTAL REROUTED", e_cdek:"TO CDEK", e_x5:"TO X5", e_sc:"BY SC", e_hub:"BY HUB", e_rev:"REVERSE",
@@ -640,6 +740,24 @@ function render(){
       const ck=hasDetail?` class="click" data-dt="rev" data-dl="${d.date}" title="${t('d_click')}"`:'';
       o+=`<tr><td${ck}>${d.date}</td><td${ck}>${fmt(d.rev.total)}</td><td class="d-ok">${fmt(d.rev.done)}</td><td>${fmt(d.rev.pending)}</td></tr>`;});
     p.innerHTML=o+'</tbody></table>';
+  })();
+
+  /* QC watchlist */
+  (()=>{
+    document.getElementById('qc-date').textContent = QCX.date;
+    const badge = p => p==='P0' ? t('qc_p0') : t('qc_p1');
+    document.getElementById('qc-cards').innerHTML = QCX.flagged.map(c=>{
+      const tags = c.tags.map(x=>`<span class="qc-tag${x.hot?' hot':(x.warm?' warm':'')}">${t('qc_t_'+x.k)}<b>${x.v}</b></span>`).join('');
+      return `<div class="qc-card ${c.p.toLowerCase()}"><span class="qc-badge">${c.p} · ${badge(c.p)}</span>
+        <div class="qc-hub">${c.hub}</div><div class="qc-who">${c.who}</div>
+        <div class="qc-tags">${tags}</div>
+        <div class="qc-note">${(c.note[LANG]||c.note.en)}</div></div>`;
+    }).join('');
+    document.getElementById('qc-clean').innerHTML = QCX.clean.map(c=>{
+      const ck = hasDetail ? ` class="qc-pill click" data-dt="pref" data-pf="${c.pref}" title="${t('d_click')}"` : ' class="qc-pill"';
+      return `<span${ck}><span class="dot"></span>${c.hub}<b>${fmt(c.n)}</b></span>`;
+    }).join('');
+    document.getElementById('qc-foot').innerHTML = t('qc_foot')(QCX.date, QCX.src);
   })();
 
   /* notes */
