@@ -317,7 +317,19 @@
 </section>
 
 <section>
-  <div class="sec-h"><span class="no">06</span><h2 data-i18n="s5"></h2><span class="mono-tag">NOTES &amp; PLAN</span></div>
+  <div class="sec-h"><span class="no">06</span><h2 data-i18n="s7"></h2><span class="mono-tag">3PL HANDOVER MONITOR · LIST OCT</span></div>
+  <div class="panel">
+    <div style="padding:14px 16px 4px" class="qc-meta">
+      <div class="chip"><span class="dot amber"></span><span data-i18n="mon_chip"></span> <span id="mon-asof">—</span></div>
+      <span style="font-size:12px;color:var(--txt2)" data-i18n="mon_lead"></span>
+    </div>
+    <div style="overflow-x:auto"><table id="mon-table"></table></div>
+    <div class="qc-foot" style="padding:0 16px 14px" id="mon-foot"></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-h"><span class="no">07</span><h2 data-i18n="s5"></h2><span class="mono-tag">NOTES &amp; PLAN</span></div>
   <ul class="notes" id="notes"></ul>
 </section>
 
@@ -348,7 +360,7 @@
 
 <script>
 /*__DATA_START__*/
-const DATA = {"generatedAt":"2026-10-20 17:34 CST","days":[{"date":"10/13","sc":{"total":907,"cdek":906,"x5":1,"other":0,"done":907,"pending":0,"origin":{"RLKN":58,"RLCK":238,"RLHW":173,"RLFN":1,"RLHZ":437}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}}]};
+const DATA = {"generatedAt":"2026-10-21 14:43 CST","days":[{"date":"10/13","sc":{"total":907,"cdek":906,"x5":1,"other":0,"done":907,"pending":0,"origin":{"RLKN":58,"RLCK":238,"RLHW":173,"RLFN":1,"RLHZ":437}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}}]};
 /*__DATA_END__*/
 
 /* 订单级明细（刷新脚本注入；sc/hub 行 [单号,3PL,done,登记人(,转运确认)]，rev 行 [单号,done]） */
@@ -405,6 +417,22 @@ const QCX = {
 };
 /*__QCX_END__*/
 
+/* 3PL 交付监控（Reroutes to 3PL_monitor / List Oct，10/13 起；刷新脚本在 monitor.csv 存在时自动覆盖） */
+let MON = {"asOf":"2026-10-20 17:55 CST","rows":[
+  {"date":"10/13","loc":"Msc hub 1","total":3,"done":3,"shipped":0,"asnY":0,"delivFilled":0},
+  {"date":"10/13","loc":"Msc hub 2","total":4,"done":4,"shipped":0,"asnY":0,"delivFilled":0},
+  {"date":"10/14","loc":"Msc hub 1","total":14,"done":14,"shipped":0,"asnY":0,"delivFilled":0},
+  {"date":"10/15","loc":"Msc hub 1","total":6,"done":6,"shipped":0,"asnY":0,"delivFilled":0},
+  {"date":"10/15","loc":"Msc hub 2","total":9,"done":9,"shipped":0,"asnY":0,"delivFilled":0},
+  {"date":"10/18","loc":"Msc hub 1","total":2,"done":2,"shipped":0,"asnY":0,"delivFilled":0},
+  {"date":"10/19","loc":"Msc hub 1","total":12,"done":12,"shipped":0,"asnY":0,"delivFilled":0},
+  {"date":"10/19","loc":"Msc hub 2","total":7,"done":7,"shipped":0,"asnY":0,"delivFilled":0},
+  {"date":"10/20","loc":"Msc hub 1","total":7,"done":7,"shipped":0,"asnY":0,"delivFilled":0}
+]};
+/*__MON_START__*/
+MON = {"asOf":"2026-10-21 14:43 CST","rows":[]};
+/*__MON_END__*/
+
 /* ── i18n ─────────────────────────────────── */
 const I18N = {
 en:{
@@ -412,7 +440,11 @@ en:{
   subtitle:"RD_DSP shutdown reroute · daily volume & 3PL flow monitoring",
   chip_gen:"DATA REFRESH", chip_latest:"LATEST ENTRY",
   s1:"Cumulative overview", s2:"Rerouted volume by day", s3:"Daily 3PL flow trend",
-  s4:"Initiator breakdown", s5:"Methodology & plan", s6:"QC cross-check · anomalous HUBs",
+  s4:"Initiator breakdown", s5:"Methodology & plan", s6:"QC cross-check · anomalous HUBs", s7:"3PL handover monitor (from 10/13)",
+  mon_chip:"MONITOR SNAPSHOT", mon_lead:"Downstream closure of reroutes already handed to 3PL, joined from the monitor sheet “List Oct” by handover location and date.",
+  mon_th_date:"Date", mon_th_loc:"Handover location", mon_th_total:"Reroute done", mon_th_ship:"Shipped to 3PL", mon_th_asn:"ASN received", mon_th_deliv:"Delivery status filled",
+  mon_foot:function(u){return "Source · <a class=\"qc-src\" href=\""+u+"\" target=\"_blank\">Reroutes to 3PL_monitor · List Oct</a> · rows with reroute done but no shipment/ASN yet are flagged amber — they need the hub to hand over and the 3PL to ACK within 7 days."},
+  mon_src:"https://alidocs.dingtalk.com/i/nodes/YMyQA2dXW7gYo6MzcDYZ2oYDWzlwrZgb",
   qc_chip:"QC SNAPSHOT", qc_lead:"HUBs already submitting reroute batches to 3PL that still show clear anomalies in the quality daily report (unreasonable reroute / tail orders).",
   qc_clean_t:"Batch-submitted & clean", qc_clean_sub:"NO ANOMALY IN QC REPORT",
   qc_p0:"ACTION NEEDED", qc_p1:"WATCHLIST",
@@ -465,7 +497,11 @@ zh:{
   subtitle:"RD_DSP 关停重路由 · 逐日单量与流向监控",
   chip_gen:"数据刷新", chip_latest:"最新登记日",
   s1:"累计总览", s2:"逐日重路由单量", s3:"每日 3PL 流向趋势",
-  s4:"发起方汇总", s5:"口径与计划说明", s6:"质控交叉标记 · 异常 HUB",
+  s4:"发起方汇总", s5:"口径与计划说明", s6:"质控交叉标记 · 异常 HUB", s7:"3PL 交付监控（10/13 起）",
+  mon_chip:"监控快照", mon_lead:"已重路由交付 3PL 的下游闭环，按交接地点与日期 join 自监控表 List Oct。",
+  mon_th_date:"日期", mon_th_loc:"交接地点", mon_th_total:"重路由完成", mon_th_ship:"已发运 3PL", mon_th_asn:"ASN 已回传", mon_th_deliv:"交付状态已回填",
+  mon_foot:function(u){return "来源 · <a class=\"qc-src\" href=\""+u+"\" target=\"_blank\">Reroutes to 3PL_monitor · List Oct</a> · 重路由完成但尚未发运/回传 ASN 的行标黄提醒——需 HUB 尽快交接、3PL 在交接后 7 天内回传。"},
+  mon_src:"https://alidocs.dingtalk.com/i/nodes/YMyQA2dXW7gYo6MzcDYZ2oYDWzlwrZgb",
   qc_chip:"质控快照", qc_lead:"已向 3PL 批量提交重路由、但质控日报中仍存在明显异常（不合理重路由 / 尾单）的 HUB。",
   qc_clean_t:"已批量提交 · 无异常", qc_clean_sub:"质控日报未见异常",
   qc_p0:"需处置", qc_p1:"观察名单",
@@ -517,7 +553,11 @@ ru:{
   subtitle:"Перенаправление в связи с закрытием RD_DSP · ежедневный объём и потоки 3PL",
   chip_gen:"ДАННЫЕ ОБНОВЛЕНЫ", chip_latest:"ПОСЛЕДНЯЯ ДАТА",
   s1:"Итоги накопленным", s2:"Объём перенаправлений по дням", s3:"Дневная динамика по 3PL",
-  s4:"Разбивка по инициаторам", s5:"Методология и план", s6:"Кросс-проверка QC · аномальные HUB",
+  s4:"Разбивка по инициаторам", s5:"Методология и план", s6:"Кросс-проверка QC · аномальные HUB", s7:"Монитор передачи в 3PL (с 13.10)",
+  mon_chip:"СНИМОК МОНИТОРА", mon_lead:"Закрытие перенаправлений, переданных в 3PL; присоединено из листа «List Oct» по локации передачи и дате.",
+  mon_th_date:"Дата", mon_th_loc:"Локация передачи", mon_th_total:"Перенаправлено", mon_th_ship:"Отгружено в 3PL", mon_th_asn:"ASN получен", mon_th_deliv:"Статус доставки заполнен",
+  mon_foot:function(u){return "Источник · <a class=\"qc-src\" href=\""+u+"\" target=\"_blank\">Reroutes to 3PL_monitor · List Oct</a> · строки «перенаправлено, но нет отгрузки/ASN» подсвечены янтарным — хабу нужно передать, а 3PL — подтвердить в течение 7 дней после передачи."},
+  mon_src:"https://alidocs.dingtalk.com/i/nodes/YMyQA2dXW7gYo6MzcDYZ2oYDWzlwrZgb",
   qc_chip:"СНИМОК QC", qc_lead:"HUB, уже подающие пакеты перенаправлений в 3PL, но с явными аномалиями в ежедневном отчёте качества (нерациональные перенаправления / «хвосты»).",
   qc_clean_t:"Пакеты поданы · без аномалий", qc_clean_sub:"БЕЗ АНОМАЛИЙ В QC",
   qc_p0:"ТРЕБУЕТ ДЕЙСТВИЙ", qc_p1:"НА НАБЛЮДЕНИИ",
@@ -758,6 +798,25 @@ function render(){
       return `<span${ck}><span class="dot"></span>${c.hub}<b>${fmt(c.n)}</b></span>`;
     }).join('');
     document.getElementById('qc-foot').innerHTML = t('qc_foot')(QCX.date, QCX.src);
+  })();
+
+  /* 3PL handover monitor table */
+  (()=>{
+    document.getElementById('mon-asof').textContent = MON.asOf||'—';
+    const rows=(MON.rows||[]).slice().sort((a,b)=>a.date.localeCompare(b.date,undefined,{numeric:true})||a.loc.localeCompare(b.loc));
+    const pendCls=(v,tot)=> v<tot ? ' class="d-warn"' : ' class="d-ok"';
+    let h=`<thead><tr><th>${t('mon_th_date')}</th><th style="text-align:left">${t('mon_th_loc')}</th>
+      <th>${t('mon_th_total')}</th><th>${t('mon_th_ship')}</th><th>${t('mon_th_asn')}</th><th>${t('mon_th_deliv')}</th></tr></thead><tbody>`;
+    h += rows.map(r=>`<tr><td>${r.date}</td><td style="text-align:left;font-family:var(--sans)">${r.loc}</td>
+      <td>${fmt(r.total)}</td>
+      <td${pendCls(r.shipped,r.total)}>${fmt(r.shipped)}</td>
+      <td${pendCls(r.asnY,r.total)}>${fmt(r.asnY)}</td>
+      <td${pendCls(r.delivFilled,r.total)}>${fmt(r.delivFilled)}</td></tr>`).join('');
+    const S={total:0,shipped:0,asnY:0,delivFilled:0};
+    rows.forEach(r=>{S.total+=r.total;S.shipped+=r.shipped;S.asnY+=r.asnY;S.delivFilled+=r.delivFilled;});
+    h+=`<tr class="total-row"><td>${t('th_total')}</td><td></td><td>${fmt(S.total)}</td><td>${fmt(S.shipped)}</td><td>${fmt(S.asnY)}</td><td>${fmt(S.delivFilled)}</td></tr></tbody>`;
+    document.getElementById('mon-table').innerHTML=h;
+    document.getElementById('mon-foot').innerHTML = t('mon_foot')(t('mon_src'));
   })();
 
   /* notes */
