@@ -382,7 +382,7 @@
 
 <script>
 /*__DATA_START__*/
-DATA = {"generatedAt":"2026-10-23 15:05 CST","days":[{"date":"10/13","sc":{"total":905,"cdek":904,"x5":1,"other":0,"done":905,"pending":0,"origin":{"RLKN":1,"RLCK":33,"RLHW":5,"RLAS":789,"RLHZ":77}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}},{"date":"10/15","sc":{"total":890,"cdek":890,"x5":0,"other":0,"done":890,"pending":0,"origin":{"RLHW":46,"RLAS":608,"RLHZ":146,"RLKN":15,"RLCK":75}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}},{"date":"10/16","sc":{"total":890,"cdek":890,"x5":0,"other":0,"done":890,"pending":0,"origin":{"RLHW":49,"RLAS":607,"RLHZ":146,"RLKN":14,"RLCK":74}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}},{"date":"10/19","sc":{"total":887,"cdek":887,"x5":0,"other":0,"done":887,"pending":0,"origin":{"RLKN":18,"RLCK":71,"RLHW":44,"RLAS":604,"RLHZ":150}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}},{"date":"10/21","sc":{"total":889,"cdek":889,"x5":0,"other":0,"done":889,"pending":0,"origin":{"RLAS":605,"RLHZ":150,"RLKN":17,"RLCK":70,"RLHW":47}},"hub":{"total":2287,"cdek":2287,"x5":0,"other":0,"done":2287,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}},{"date":"10/23","sc":{"total":110,"cdek":110,"x5":0,"other":0,"done":110,"pending":0,"origin":{"RLCK":5,"RLAS":52,"RLHZ":53}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}}]};
+DATA = {"generatedAt":"2026-10-23 15:26 CST","days":[{"date":"10/13","sc":{"total":905,"cdek":904,"x5":1,"other":0,"done":905,"pending":0,"origin":{"RLKN":1,"RLCK":33,"RLHW":5,"RLAS":789,"RLHZ":77}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}},{"date":"10/15","sc":{"total":890,"cdek":890,"x5":0,"other":0,"done":890,"pending":0,"origin":{"RLHW":46,"RLAS":608,"RLHZ":146,"RLKN":15,"RLCK":75}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}},{"date":"10/16","sc":{"total":890,"cdek":890,"x5":0,"other":0,"done":890,"pending":0,"origin":{"RLHW":49,"RLAS":607,"RLHZ":146,"RLKN":14,"RLCK":74}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}},{"date":"10/19","sc":{"total":887,"cdek":887,"x5":0,"other":0,"done":887,"pending":0,"origin":{"RLKN":18,"RLCK":71,"RLHW":44,"RLAS":604,"RLHZ":150}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}},{"date":"10/21","sc":{"total":889,"cdek":889,"x5":0,"other":0,"done":889,"pending":0,"origin":{"RLAS":605,"RLHZ":150,"RLKN":17,"RLCK":70,"RLHW":47}},"hub":{"total":2287,"cdek":2287,"x5":0,"other":0,"done":2287,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}},{"date":"10/23","sc":{"total":110,"cdek":110,"x5":0,"other":0,"done":110,"pending":0,"origin":{"RLCK":5,"RLAS":52,"RLHZ":53}},"hub":{"total":0,"cdek":0,"x5":0,"other":0,"done":0,"pending":0,"confirmed":0},"rev":{"total":0,"done":0,"pending":0}}]};
 /*__DATA_END__*/
 
 /* 订单级明细（刷新脚本注入；sc/hub 行 [单号,3PL,done,登记人(,转运确认)]，rev 行 [单号,done]） */
@@ -397,46 +397,57 @@ const HUBMAP = {
 };
 /*__HUBMAP_END__*/
 
-/* 质控交叉标记（来源：RU COE Quality Daily Report，静态快照，不随每日刷新变动，需人工按期更新） */
-/*__QCX_START__*/
-const QCX = {
-  "date":"2026-10-18",
-  "src":"https://alidocs.dingtalk.com/i/nodes/r1R7q3QmWew5lo02f7nMpBvwJxkXOEP2",
+/* 质控交叉标记（来源：RU COE Quality Daily Report；下为 2026-10-21 静态快照兜底，刷新脚本在 tmp/qcx.json 存在时自动覆盖为最新一期） */
+let QCX = {
+  "date":"2026-10-21",
+  "src":"https://alidocs.dingtalk.com/i/nodes/m9bN7RYPWdyrPBREcRPkZyPOVZd1wyK0",
   "flagged":[
     {"p":"P0","hub":"SPB HUB(RuConnect)","who":"FN · Papchenkov A",
-     "tags":[{"k":"rer1","v":"28"},{"k":"dpudo","v":"7/10"},{"k":"tail","v":"431 · 1.2%"}],
-     "note":{"zh":"唯一同时登上两张不合理重路由榜的 HUB：1+1 提交 28 单（Top10 第3）；Dark PUDO 榜占 7 席（小件员 Шаршов 27、Алешин А. 23、Алешин Н. 32），周尾单 431 单为全网绝对量最大。属操作纪律问题，建议点名核查这 3 名小件员。",
-             "en":"The only HUB on both unreasonable-reroute lists: 28 one-plus-one reroutes (#3 in Top10); 7 of 10 Dark-PUDO slots (couriers Шаршов 27, Алешин А. 23, Алешин Н. 32); weekly tail orders 431, the largest absolute count network-wide. A discipline issue — review these 3 couriers.",
-             "ru":"Единственный HUB сразу в обоих списках нерациональных перенаправлений: 28 «1+1» (#3 в Top10); 7 из 10 позиций Dark-PUDO (курьеры Шаршов 27, Алешин А. 23, Алешин Н. 32); 431 «хвостовых» за неделю — максимум в сети. Вопрос дисциплины — проверить этих 3 курьеров."}},
-    {"p":"P0","hub":"MSC_HUB2(RuConnect)","who":"FN · Ponomarev",
-     "tags":[{"k":"dpudo","v":"2/10"},{"k":"tail","v":"64 · 0.2%"}],
-     "note":{"zh":"Dark PUDO 榜 2 席（小件员 Чуприков 11+10=21 单不合理），尾单率正常。单点小件员问题，针对性辅导即可。",
-             "en":"2 Dark-PUDO slots (courier Чуприков 11+10=21 unreasonable); tail rate normal. An isolated courier issue — targeted coaching.",
-             "ru":"2 позиции Dark-PUDO (курьер Чуприков 11+10=21 нерациональных); доля «хвостов» в норме. Локальная проблема курьера — точечное обучение."}},
-    {"p":"P1","hub":"Tula_HUB(IP Frolin)","who":"FN · Safonovskaya V",
-     "tags":[{"k":"tail","v":"380 · 19.7%","hot":1},{"k":"daily","v":"10/15 24.7%"}],
-     "note":{"zh":"尚未纳入批量重路由，但持续高尾单：周 380 单 / 19.7%，10/15 单日 193 单 / 24.7%、10/18 88 单 / 24.9%，全网最差持续性。建议优先补入 3PL 提交范围。",
-             "en":"Not yet in the batch reroute but persistently high tail orders: 380 / 19.7% weekly, 193 / 24.7% on 10/15, 88 / 24.9% on 10/18 — worst sustained in the network. Recommend adding to 3PL scope first.",
-             "ru":"Ещё не в пакетном перенаправлении, но стабильно высокий уровень «хвостов»: 380 / 19.7% за неделю, 193 / 24.7% 15.10, 88 / 24.9% 18.10 — худший устойчивый показатель в сети. Рекомендуется первым включить в перенаправление в 3PL."}},
-    {"p":"P1","hub":"Krasnodar_HUB (Index)","who":"LI · Rib V.",
-     "tags":[{"k":"tail","v":"36 · 56.3%","hot":1},{"k":"daily","v":"10/18 36.4%"}],
-     "note":{"zh":"尚未纳入批量重路由，尾单率全网最严重：周 56.3%，单日 30%~100% 波动。需立即介入。",
-             "en":"Not yet in the batch reroute; the most severe tail rate network-wide: 56.3% weekly, swinging 30%–100% daily. Needs immediate intervention.",
-             "ru":"Ещё не в пакетном перенаправлении; самый тяжёлый показатель «хвостов» в сети: 56.3% за неделю, в днях от 30% до 100%. Требуется немедленное вмешательство."}},
+     "tags":[{"k":"dpudo","v":"9/10","hot":1},{"k":"rer1","v":"64 · 0 bad"},{"k":"tail","v":"431 · 1.2%"}],
+     "note":{"zh":"Dark-PUDO 榜几乎垄断（10 席占 9：Алешин 12、Большаков 20(11+9)、Лавров 18(10+8)、Шаршов 10、Семенов 10、Кононов 9、Салимгариев 8）；1+1 已整改（64 单重路由 0 不合理，对比 10/18 曾达 28 单）；周尾单 431 单为全网绝对量最大。核心已收敛为小件员 Dark-PUDO 纪律问题，建议点名上榜 5 名高频小件员。",
+             "en":"Dominates the Dark-PUDO list (9 of 10 slots: Алешин 12, Большаков 20(11+9), Лавров 18(10+8), Шаршов 10, Семенов 10, Кононов 9, Салимгариев 8); 1+1 now fixed (64 reroutes, 0 unreasonable — vs 28 on 10/18); weekly tail 431, the largest absolute count network-wide. The issue has narrowed to courier Dark-PUDO discipline — name-check the 5 top couriers.",
+             "ru":"Практически монополизирует список Dark-PUDO (9 из 10: Алешин 12, Большаков 20(11+9), Лавров 18(10+8), Шаршов 10, Семёнов 10, Кононов 9, Салимгариев 8); «1+1» исправлено (64 перенаправления, 0 нерациональных — против 28 на 18.10); 431 «хвостов» за неделю — максимум в сети. Проблема свелась к дисциплине курьеров Dark-PUDO — проверить 5 указанных курьеров."}},
+    {"p":"P0","hub":"Novosibirsk_HUB(Express Kinetika)","who":"BI · Martynov A.",
+     "tags":[{"k":"tail","v":"112 · 11.4%","hot":1},{"k":"daily","v":"10/21"},{"k":"rer1","v":"40 · 0 bad"}],
+     "note":{"zh":"10/21 新增单日尾单尖峰：112 单 / 11.4%（此前数日仅 0–1 单）。1+1 重路由 40 单均合理。需核实 10/21 当日是否发生系统性延误或爆仓，属新出现的质量风险。",
+             "en":"New single-day tail spike on 10/21: 112 / 11.4% (prior days only 0–1). 1+1 reroutes (40) all reasonable. Verify whether 10/21 had a systemic delay or overload — a newly emerged quality risk.",
+             "ru":"Новый однодневный пик «хвостов» 21.10: 112 / 11,4% (в предыдущие дни лишь 0–1). «1+1» (40 перенаправлений) — все рациональны. Проверьте, не было ли 21.10 системной задержки или перегрузки — свежий риск качества."}},
+    {"p":"P1","hub":"Rostov_HUB(Ruconnect)","who":"LI · Rib V.",
+     "tags":[{"k":"rer1","v":"2/5","hot":1},{"k":"dpudo","v":"whitelist 2"}],
+     "note":{"zh":"1+1 榜单中唯一仍有不合理重路由的 HUB（5 单中 2 单不合理），另有 2 单上 Locker 白名单榜。规模虽小，但口径违规明确。",
+             "en":"The only HUB still showing unreasonable 1+1 reroutes (2 of 5), plus 2 orders on the locker-whitelist list. Small volume but a clear caliber violation.",
+             "ru":"Единственный HUB с нерациональными «1+1» (2 из 5), плюс 2 позиции в списке locker-whitelist. Объём мал, но нарушение методики очевидно."}},
     {"p":"P1","hub":"SPB_HUB(Tochno_v_srok)","who":"FN · Safonovskaya V",
-     "tags":[{"k":"tail","v":"34 · 7.4%","warm":1},{"k":"daily","v":"10/12 29%"}],
-     "note":{"zh":"尚未纳入批量重路由，周尾单 34 单 / 7.4%，10/12 单日 29%。异常明显，建议补入提交范围。",
-             "en":"Not yet in the batch reroute; 34 tail orders / 7.4% weekly, 29% on 10/12. Clear anomaly — recommend adding to scope.",
-             "ru":"Ещё не в пакетном перенаправлении; 34 «хвоста» / 7.4% за неделю, 29% 12.10. Очевидная аномалия — рекомендуется включить в перенаправление."}}
+     "tags":[{"k":"tail","v":"29 · 29.9%","hot":1},{"k":"daily","v":"10/20 36.1%"}],
+     "note":{"zh":"持续高尾单且恶化：10/21 29 单 / 29.9%、10/20 22 单 / 36.1%（周 34 单 / 7.4%）。尚未纳入批量重路由，建议优先补入 3PL 提交范围。",
+             "en":"Persistently high and worsening tail orders: 29 / 29.9% on 10/21, 22 / 36.1% on 10/20 (weekly 34 / 7.4%). Not yet in the batch reroute — recommend adding to 3PL scope first.",
+             "ru":"Стабильно высокие и растущие «хвосты»: 29 / 29,9% 21.10, 22 / 36,1% 20.10 (за неделю 34 / 7,4%). Ещё не в пакетном перенаправлении — рекомендуется первым включить в 3PL."}},
+    {"p":"P1","hub":"Krasnodar_HUB (Index)","who":"LI · Rib V.",
+     "tags":[{"k":"tail","v":"36 · 56.3%","hot":1},{"k":"daily","v":"10/21 100%"}],
+     "note":{"zh":"尾单率全网最严重：周 36 单 / 56.3%，10/19、10/21 单日达 100%（基数小）。尚未纳入批量重路由，需立即介入。",
+             "en":"The most severe tail rate network-wide: 36 / 56.3% weekly, hitting 100% on 10/19 and 10/21 (small base). Not yet in the batch reroute — needs immediate intervention.",
+             "ru":"Самый тяжёлый показатель «хвостов» в сети: 36 / 56,3% за неделю, 100% 19.10 и 21.10 (малая база). Ещё не в пакетном перенаправлении — требуется немедленное вмешательство."}},
+    {"p":"P1","hub":"Tula_HUB(IP Frolin)","who":"FN · Safonovskaya V",
+     "tags":[{"k":"tail","v":"380 · 19.7%","warm":1},{"k":"daily","v":"10/19–21 已回落"}],
+     "note":{"zh":"已恢复观察：10/18 单日曾 380 单 / 19.7%，10/19 起连续回落（10/21 已归零）。该 HUB 现已是全网最大重路由提交方（RLAS 累计 4618 单），保持跟进。",
+             "en":"Recovering: 380 / 19.7% on 10/18 has since fallen back (0 on 10/21). Now the largest reroute submitter network-wide (RLAS, 4618 cumulative) — keep following up.",
+             "ru":"Восстановление: 380 / 19,7% было 18.10, с 19.10 спадает (0 на 21.10). Теперь крупнейший источник перенаправлений в сети (RLAS, 4618 накопительно) — держать на контроле."}},
+    {"p":"P1","hub":"MSC_HUB2(RuConnect)","who":"FN · Ponomarev",
+     "tags":[{"k":"dpudo","v":"1/10","warm":1},{"k":"tail","v":"64 · 0.2%"}],
+     "note":{"zh":"改善观察：Dark-PUDO 席位 2→1（仅剩小件员 Пирожков 9 单），尾单率正常（周 64 单 / 0.2%）。较 10/18 的 P0 已明显好转，保持跟进即可。",
+             "en":"Improving: Dark-PUDO slots down 2→1 (only courier Пирожков, 9 orders), tail rate normal (weekly 64 / 0.2%). Clearly better than its P0 on 10/18 — keep monitoring.",
+             "ru":"Улучшение: позиции Dark-PUDO 2→1 (только курьер Пирожков, 9 отправлений), доля «хвостов» в норме (64 / 0,2% за неделю). Заметно лучше, чем P0 на 18.10 — продолжать наблюдение."}}
   ],
   "clean":[
-    {"hub":"Vladivostok_HUB(Amur)","pref":"RLHZ","n":437},
-    {"hub":"Ekaterinburg_HUB(NordTransit)","pref":"RLCK","n":238},
-    {"hub":"Khabarovsk_HUB(Amur)","pref":"RLHW","n":173},
-    {"hub":"Blagoveschensk_HUB(IP_Zhdankin)","pref":"RLKN","n":58},
-    {"hub":"Blagoveschensk_HUB(Sinergiya)","pref":"RLFN","n":1}
+    {"hub":"Vladivostok_HUB(Amur)","pref":"RLHZ","n":794},
+    {"hub":"Ekaterinburg_HUB(NordTransit)","pref":"RLCK","n":339},
+    {"hub":"Khabarovsk_HUB(Amur)","pref":"RLHW","n":217},
+    {"hub":"Blagoveschensk_HUB(IP_Zhdankin)","pref":"RLKN","n":691},
+    {"hub":"Blagoveschensk_HUB(Sinergiya)","pref":"RLFN","n":13}
   ]
 };
+/*__QCX_START__*/
+QCX = {  "date":"2026-10-21",  "src":"https://alidocs.dingtalk.com/i/nodes/m9bN7RYPWdyrPBREcRPkZyPOVZd1wyK0",  "flagged":[    {"p":"P0","hub":"SPB HUB(RuConnect)","who":"FN · Papchenkov A",     "tags":[{"k":"dpudo","v":"9/10","hot":1},{"k":"rer1","v":"64 · 0 bad"},{"k":"tail","v":"431 · 1.2%"}],     "note":{"zh":"Dark-PUDO 榜几乎垄断（10 席占 9：Алешин 12、Большаков 20(11+9)、Лавров 18(10+8)、Шаршов 10、Семенов 10、Кононов 9、Салимгариев 8）；1+1 已整改（64 单重路由 0 不合理，对比 10/18 曾达 28 单）；周尾单 431 单为全网绝对量最大。核心已收敛为小件员 Dark-PUDO 纪律问题，建议点名上榜 5 名高频小件员。",             "en":"Dominates the Dark-PUDO list (9 of 10 slots: Алешин 12, Большаков 20(11+9), Лавров 18(10+8), Шаршов 10, Семенов 10, Кононов 9, Салимгариев 8); 1+1 now fixed (64 reroutes, 0 unreasonable — vs 28 on 10/18); weekly tail 431, the largest absolute count network-wide. The issue has narrowed to courier Dark-PUDO discipline — name-check the 5 top couriers.",             "ru":"Практически монополизирует список Dark-PUDO (9 из 10: Алешин 12, Большаков 20(11+9), Лавров 18(10+8), Шаршов 10, Семёнов 10, Кононов 9, Салимгариев 8); «1+1» исправлено (64 перенаправления, 0 нерациональных — против 28 на 18.10); 431 «хвостов» за неделю — максимум в сети. Проблема свелась к дисциплине курьеров Dark-PUDO — проверить 5 указанных курьеров."}},    {"p":"P0","hub":"Novosibirsk_HUB(Express Kinetika)","who":"BI · Martynov A.",     "tags":[{"k":"tail","v":"112 · 11.4%","hot":1},{"k":"daily","v":"10/21"},{"k":"rer1","v":"40 · 0 bad"}],     "note":{"zh":"10/21 新增单日尾单尖峰：112 单 / 11.4%（此前数日仅 0–1 单）。1+1 重路由 40 单均合理。需核实 10/21 当日是否发生系统性延误或爆仓，属新出现的质量风险。",             "en":"New single-day tail spike on 10/21: 112 / 11.4% (prior days only 0–1). 1+1 reroutes (40) all reasonable. Verify whether 10/21 had a systemic delay or overload — a newly emerged quality risk.",             "ru":"Новый однодневный пик «хвостов» 21.10: 112 / 11,4% (в предыдущие дни лишь 0–1). «1+1» (40 перенаправлений) — все рациональны. Проверьте, не было ли 21.10 системной задержки или перегрузки — свежий риск качества."}},    {"p":"P1","hub":"Rostov_HUB(Ruconnect)","who":"LI · Rib V.",     "tags":[{"k":"rer1","v":"2/5","hot":1},{"k":"dpudo","v":"whitelist 2"}],     "note":{"zh":"1+1 榜单中唯一仍有不合理重路由的 HUB（5 单中 2 单不合理），另有 2 单上 Locker 白名单榜。规模虽小，但口径违规明确。",             "en":"The only HUB still showing unreasonable 1+1 reroutes (2 of 5), plus 2 orders on the locker-whitelist list. Small volume but a clear caliber violation.",             "ru":"Единственный HUB с нерациональными «1+1» (2 из 5), плюс 2 позиции в списке locker-whitelist. Объём мал, но нарушение методики очевидно."}},    {"p":"P1","hub":"SPB_HUB(Tochno_v_srok)","who":"FN · Safonovskaya V",     "tags":[{"k":"tail","v":"29 · 29.9%","hot":1},{"k":"daily","v":"10/20 36.1%"}],     "note":{"zh":"持续高尾单且恶化：10/21 29 单 / 29.9%、10/20 22 单 / 36.1%（周 34 单 / 7.4%）。尚未纳入批量重路由，建议优先补入 3PL 提交范围。",             "en":"Persistently high and worsening tail orders: 29 / 29.9% on 10/21, 22 / 36.1% on 10/20 (weekly 34 / 7.4%). Not yet in the batch reroute — recommend adding to 3PL scope first.",             "ru":"Стабильно высокие и растущие «хвосты»: 29 / 29,9% 21.10, 22 / 36,1% 20.10 (за неделю 34 / 7,4%). Ещё не в пакетном перенаправлении — рекомендуется первым включить в 3PL."}},    {"p":"P1","hub":"Krasnodar_HUB (Index)","who":"LI · Rib V.",     "tags":[{"k":"tail","v":"36 · 56.3%","hot":1},{"k":"daily","v":"10/21 100%"}],     "note":{"zh":"尾单率全网最严重：周 36 单 / 56.3%，10/19、10/21 单日达 100%（基数小）。尚未纳入批量重路由，需立即介入。",             "en":"The most severe tail rate network-wide: 36 / 56.3% weekly, hitting 100% on 10/19 and 10/21 (small base). Not yet in the batch reroute — needs immediate intervention.",             "ru":"Самый тяжёлый показатель «хвостов» в сети: 36 / 56,3% за неделю, 100% 19.10 и 21.10 (малая база). Ещё не в пакетном перенаправлении — требуется немедленное вмешательство."}},    {"p":"P1","hub":"Tula_HUB(IP Frolin)","who":"FN · Safonovskaya V",     "tags":[{"k":"tail","v":"380 · 19.7%","warm":1},{"k":"daily","v":"10/19–21 已回落"}],     "note":{"zh":"已恢复观察：10/18 单日曾 380 单 / 19.7%，10/19 起连续回落（10/21 已归零）。该 HUB 现已是全网最大重路由提交方（RLAS 累计 4618 单），保持跟进。",             "en":"Recovering: 380 / 19.7% on 10/18 has since fallen back (0 on 10/21). Now the largest reroute submitter network-wide (RLAS, 4618 cumulative) — keep following up.",             "ru":"Восстановление: 380 / 19,7% было 18.10, с 19.10 спадает (0 на 21.10). Теперь крупнейший источник перенаправлений в сети (RLAS, 4618 накопительно) — держать на контроле."}},    {"p":"P1","hub":"MSC_HUB2(RuConnect)","who":"FN · Ponomarev",     "tags":[{"k":"dpudo","v":"1/10","warm":1},{"k":"tail","v":"64 · 0.2%"}],     "note":{"zh":"改善观察：Dark-PUDO 席位 2→1（仅剩小件员 Пирожков 9 单），尾单率正常（周 64 单 / 0.2%）。较 10/18 的 P0 已明显好转，保持跟进即可。",             "en":"Improving: Dark-PUDO slots down 2→1 (only courier Пирожков, 9 orders), tail rate normal (weekly 64 / 0.2%). Clearly better than its P0 on 10/18 — keep monitoring.",             "ru":"Улучшение: позиции Dark-PUDO 2→1 (только курьер Пирожков, 9 отправлений), доля «хвостов» в норме (64 / 0,2% за неделю). Заметно лучше, чем P0 на 18.10 — продолжать наблюдение."}}  ],  "clean":[    {"hub":"Vladivostok_HUB(Amur)","pref":"RLHZ","n":794},    {"hub":"Ekaterinburg_HUB(NordTransit)","pref":"RLCK","n":339},    {"hub":"Khabarovsk_HUB(Amur)","pref":"RLHW","n":217},    {"hub":"Blagoveschensk_HUB(IP_Zhdankin)","pref":"RLKN","n":691},    {"hub":"Blagoveschensk_HUB(Sinergiya)","pref":"RLFN","n":13}  ]};
 /*__QCX_END__*/
 
 /* 3PL 交付监控（Reroutes to 3PL_monitor / List Oct，10/13 起；刷新脚本在 monitor.csv 存在时自动覆盖） */
@@ -452,7 +463,7 @@ let MON = {"asOf":"2026-10-20 17:55 CST","rows":[
   {"date":"10/20","loc":"Msc hub 1","total":7,"done":7,"shipped":0,"asnY":0,"delivFilled":0}
 ]};
 /*__MON_START__*/
-MON = {"asOf":"2026-10-23 15:06 CST","rows":[{"date":"10/20","loc":"Msc hub 1","total":7,"done":7,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/21","loc":"Msc hub 1","total":50,"done":50,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/22","loc":"Msc hub 1","total":63,"done":63,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/13","loc":"Msc hub 1","total":3,"done":3,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/13","loc":"Msc hub 2","total":4,"done":4,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/23","loc":"Msc hub 1","total":106,"done":0,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/14","loc":"Msc hub 1","total":14,"done":14,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/15","loc":"Msc hub 1","total":6,"done":6,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/15","loc":"Msc hub 2","total":9,"done":9,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/18","loc":"Msc hub 1","total":2,"done":2,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/19","loc":"Msc hub 1","total":12,"done":12,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/19","loc":"Msc hub 2","total":7,"done":7,"shipped":0,"asnY":0,"delivFilled":0}]};
+MON = {"asOf":"2026-10-23 15:26 CST","rows":[{"date":"10/20","loc":"Msc hub 1","total":7,"done":7,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/21","loc":"Msc hub 1","total":50,"done":50,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/22","loc":"Msc hub 1","total":63,"done":63,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/13","loc":"Msc hub 1","total":3,"done":3,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/13","loc":"Msc hub 2","total":4,"done":4,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/23","loc":"Msc hub 1","total":106,"done":0,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/14","loc":"Msc hub 1","total":14,"done":14,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/15","loc":"Msc hub 1","total":6,"done":6,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/15","loc":"Msc hub 2","total":9,"done":9,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/18","loc":"Msc hub 1","total":2,"done":2,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/19","loc":"Msc hub 1","total":12,"done":12,"shipped":0,"asnY":0,"delivFilled":0},{"date":"10/19","loc":"Msc hub 2","total":7,"done":7,"shipped":0,"asnY":0,"delivFilled":0}]};
 /*__MON_END__*/
 
 /* ── i18n ─────────────────────────────────── */
